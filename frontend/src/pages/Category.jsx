@@ -1,61 +1,54 @@
 import React from "react";
+import { gql } from "@apollo/client";
 import Header from "../components/Header/Header";
-import Card from "../components/Card";
+import Card from "../components/Сard";
+import getProductsByCategory from "../utils/getProductsByCategory";
+
+const GET_PRODUCTS = gql`
+  query getProductsByCategory($category: String!) {
+    productsByCategory(category: $category) {
+      id
+      name
+      inStock
+      gallery
+      category
+      attributes {
+        id
+        items {
+          id
+          value
+          displayValue
+        }
+      }
+      prices {
+        amount
+        currency {
+          symbol
+        }
+      }
+    }
+  }
+`;
 
 class Category extends React.Component {
   render() {
-    //import data from graphl (later)
-    const mockProducts = [
-      {
-        id: 1,
-        name: "T-Shirt",
-        inStock: true,
-        gallery: ["/product1.jpg"],
-        category: "clothes",
-        price: "$20",
-      },
-      {
-        id: 2,
-        name: "Laptop",
-        inStock: false,
-        gallery: ["/product2.jpg"],
-        category: "tech",
-        price: "$999",
-      },
-      {
-        id: 3,
-        name: "Headphones",
-        inStock: true,
-        gallery: ["/product3.jpg"],
-        category: "tech",
-        price: "$59",
-      },
-    ];
-
-
-    const currentPath = window.location.pathname.replace("/", "") || "all";
-
- 
-    const filteredProducts =
-      currentPath === "all"
-        ? mockProducts
-        : mockProducts.filter((p) => p.category === currentPath);
+    const { data } = this.props;
+    const category = data.productsByCategory[0]?.category || "Category";
 
     return (
       <>
-        <Header activeCategory={currentPath} />
-
+        <Header activeCategory={category} />
         <section className="w-full">
           <div className="w-full h-40 flex items-center">
             <p className="text-[42px] ml-24 text-[#1D1F22] uppercase">
-              {currentPath}
+              {category}
             </p>
           </div>
 
           <div className="w-full flex justify-center items-center">
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-16">
-              {filteredProducts.map((product) => (
-                <Card key={product.id} data={product} />
+              {data.productsByCategory.map((product, index) => (
+                <Card key={index} data={product} />
               ))}
             </div>
           </div>
@@ -65,4 +58,20 @@ class Category extends React.Component {
   }
 }
 
-export default Category;
+const CategoryWithData = (props) => {
+  const currentPath = window.location.pathname;
+  const paths = [
+    { path: "/all", label: "ALL" },
+    { path: "/clothes", label: "CLOTHES" },
+    { path: "/tech", label: "TECH" },
+  ];
+  
+
+  const category = paths.find((item) => item.path === currentPath)?.label;
+
+  const Wrapped = getProductsByCategory(Category, GET_PRODUCTS, category);
+  return <Wrapped {...props} />;
+};
+
+
+export default CategoryWithData;

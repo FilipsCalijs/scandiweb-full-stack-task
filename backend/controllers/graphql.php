@@ -1,0 +1,155 @@
+<?php
+
+use GraphQL\Type\Schema;
+use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\ObjectType;
+
+class GraphQLSchema {
+    private $product;
+
+    public function __construct(Products $products) {
+        $this->product = $products;
+    }
+
+    public function getSchema() {
+       
+        $productType = new ObjectType([
+            'name' => 'Product',
+            'fields' => [
+                'id' => Type::string(),
+                'name' => Type::string(),
+                'inStock' => Type::boolean(),
+                'gallery' => Type::listOf(Type::string()),
+                'description' => Type::string(),
+                'category' => Type::string(),
+                'attributes' => Type::listOf(new ObjectType([
+                    'name' => 'AttributeSet',
+                    'fields' => [
+                        'id' => Type::string(),
+                        'items' => Type::listOf(new ObjectType([
+                            'name' => 'Attribute',
+                            'fields' => [
+                                'displayValue' => Type::string(),
+                                'value' => Type::string(),
+                                'id' => Type::string(),
+                            ]
+                        ])),
+                        'name' => Type::string(),
+                        'type' => Type::string(),
+                    ]
+                ])),
+                'prices' => Type::listOf(new ObjectType([
+                    'name' => 'Price',
+                    'fields' => [
+                        'amount' => Type::float(),
+                        'currency' => new ObjectType([
+                            'name' => 'Currency',
+                            'fields' => [
+                                'label' => Type::string(),
+                                'symbol' => Type::string(),
+                            ]
+                        ]),
+                    ]
+                ])),
+                'brand' => Type::string(),
+            ]
+        ]);
+
+      
+        $categoryType = new ObjectType([
+            'name' => 'Category',
+            'fields' => [
+                'id' => Type::string(),
+                'name' => Type::string(),
+                '__typename' => Type::string(),
+            ]
+        ]);
+
+        
+        $queryType = new ObjectType([
+            'name' => 'Query',
+            'fields' => [
+                'products' => [
+                    'type' => Type::listOf($productType),
+                    'resolve' => function () {
+                        $products = $this->product->getProducts(new AllCategory());
+                        return array_map(function ($product) {
+                            return [
+                                'id' => $product->getId(),
+                                'name' => $product->getName(),
+                                'inStock' => $product->isInStock(),
+                                'gallery' => $product->getGallery(),
+                                'description' => $product->getDescription(),
+                                'category' => $product->getCategory(),
+                                'attributes' => $product->getAttributes(),
+                                'prices' => $product->getPrices(),
+                                'brand' => $product->getBrand(),
+                            ];
+                        }, $products);
+                    }
+                ],
+                'productsByCategory' => [
+                    'type' => Type::listOf($productType),
+                    'args' => [
+                        'category' => Type::string(),
+                    ],
+                    'resolve' => function ($root, $args) {
+                        $category = $args['category'];
+                        $categoryClass = CategoryFactory::create($category);
+                        $products = $this->product->getProducts($categoryClass);
+                        return array_map(function ($product) {
+                            return [
+                                'id' => $product->getId(),
+                                'name' => $product->getName(),
+                                'inStock' => $product->isInStock(),
+                                'gallery' => $product->getGallery(),
+                                'description' => $product->getDescription(),
+                                'category' => $product->getCategory(),
+                                'attributes' => $product->getAttributes(),
+                                'prices' => $product->getPrices(),
+                                'brand' => $product->getBrand(),
+                            ];
+                        }, $products);
+                    }
+                ],
+                'categories' => [
+                    'type' => Type::listOf($categoryType),
+                    'resolve' => function () {
+                        $categories = $this->product->getCategories();
+                        return array_map(function ($category) {
+                            return [
+                                'id' => $category->getId(),
+                                'name' => $category->getName(),
+                            ];
+                        }, $categories);
+                    }
+                ],
+                'product' => [
+                    'type' => $productType,
+                    'args' => [
+                        'id' => Type::nonNull(Type::string())
+                    ],
+                    'resolve' => function ($root, $args) {
+                        $product = $this->product->getProductById($args['id']);
+                        return [
+                            'id' => $product->getId(),
+                            'name' => $product->getName(),
+                            'inStock' => $product->isInStock(),
+                            'gallery' => $product->getGallery(),
+                            'description' => $product->getDescription(),
+                            'category' => $product->getCategory(),
+                            'attributes' => $product->getAttributes(),
+                            'prices' => $product->getPrices(),
+                            'brand' => $product->getBrand(),
+                        ];
+                    }
+                ],
+            ]
+        ]);
+
+        
+        return new Schema([
+            'query' => $queryType
+        ]);
+    }
+}

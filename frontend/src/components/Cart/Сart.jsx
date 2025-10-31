@@ -4,8 +4,8 @@ class Cart extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cartItemsCount: this.getCartItemsCount(),
-      cartItems: this.getCartItems(),
+      cartItemsCount: this.loadCartItemsCount(),
+      cartItems: this.loadCartItems(),
     };
   }
 
@@ -14,28 +14,32 @@ class Cart extends React.Component {
     this.setState({ cartItemsCount: 0, cartItems: [] });
   };
 
-  getCartItemsCount = () => {
-    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-    return cartItems.length;
+  loadCartItemsCount = () => {
+    const stored = JSON.parse(localStorage.getItem("cartItems")) || [];
+    return stored.length;
   };
 
-  getCartItems = () => {
-    return (JSON.parse(localStorage.getItem("cartItems")) || []).reverse();
+  loadCartItems = () => {
+    const stored = JSON.parse(localStorage.getItem("cartItems")) || [];
+    return stored.reverse();
   };
 
   componentDidMount() {
     this.interval = setInterval(() => {
-      const newCount = this.getCartItemsCount();
-      const newItems = this.getCartItems();
+      const latestCount = this.loadCartItemsCount();
+      const latestItems = this.loadCartItems();
 
-      const currentItemsString = JSON.stringify(this.state.cartItems);
-      const newItemsString = JSON.stringify(newItems);
+      const prevItemsString = JSON.stringify(this.state.cartItems);
+      const updatedItemsString = JSON.stringify(latestItems);
 
       if (
-        newCount !== this.state.cartItemsCount ||
-        currentItemsString !== newItemsString
+        latestCount !== this.state.cartItemsCount ||
+        prevItemsString !== updatedItemsString
       ) {
-        this.setState({ cartItemsCount: newCount, cartItems: newItems });
+        this.setState({
+          cartItemsCount: latestCount,
+          cartItems: latestItems,
+        });
       }
     }, 500);
   }
