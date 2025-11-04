@@ -3,16 +3,19 @@
 use GraphQL\Type\Schema;
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\InputObjectType;
 
 class GraphQLSchema {
     private $product;
+    private $orders;
 
-    public function __construct(Products $products) {
+    public function __construct(Products $products , Orders $orders) {
         $this->product = $products;
+        $this->orders = $orders;
     }
 
     public function getSchema() {
-       
+        // ProductType definition
         $productType = new ObjectType([
             'name' => 'Product',
             'fields' => [
@@ -55,24 +58,25 @@ class GraphQLSchema {
             ]
         ]);
 
-      
+        // CategoryType definition
         $categoryType = new ObjectType([
             'name' => 'Category',
             'fields' => [
-                'id' => Type::string(),
                 'name' => Type::string(),
                 '__typename' => Type::string(),
             ]
         ]);
 
-        
+        // Query definition
         $queryType = new ObjectType([
             'name' => 'Query',
             'fields' => [
                 'products' => [
                     'type' => Type::listOf($productType),
                     'resolve' => function () {
+
                         $products = $this->product->getProducts(new AllCategory());
+                
                         return array_map(function ($product) {
                             return [
                                 'id' => $product->getId(),
@@ -94,9 +98,11 @@ class GraphQLSchema {
                         'category' => Type::string(),
                     ],
                     'resolve' => function ($root, $args) {
-                        $category = $args['category'];
+                        $category = $args['category']; 
+
                         $categoryClass = CategoryFactory::create($category);
                         $products = $this->product->getProducts($categoryClass);
+
                         return array_map(function ($product) {
                             return [
                                 'id' => $product->getId(),
@@ -110,6 +116,8 @@ class GraphQLSchema {
                                 'brand' => $product->getBrand(),
                             ];
                         }, $products);
+                        
+    
                     }
                 ],
                 'categories' => [
@@ -130,7 +138,7 @@ class GraphQLSchema {
                         'id' => Type::nonNull(Type::string())
                     ],
                     'resolve' => function ($root, $args) {
-                        $product = $this->product->getProductById($args['id']);
+                        $product = $this->product->getProductById($args['id']); 
                         return [
                             'id' => $product->getId(),
                             'name' => $product->getName(),
@@ -147,9 +155,35 @@ class GraphQLSchema {
             ]
         ]);
 
-        
+        // Mutation definition
+        $mutationType = new ObjectType([
+            'name' => 'Mutation',
+            'fields' => [
+                'placeOrder' => [
+                    'type' => Type::boolean(), 
+                    'args' => [
+                        'orders' => Type::listOf(new InputObjectType([
+                            'name' => 'OrderInput',
+                            'fields' => [
+                                'id' => Type::nonNull(Type::string()),    
+                                'quantity' => Type::nonNull(Type::int()), 
+                                'size' => Type::string(),                  
+                                'color' => Type::string(),
+                                'capacity' => Type::string(),                 
+                            ],
+                        ])),
+                    ],
+                    'resolve' => function ($root, $args) {
+                        return $this->orders->placeOrder($args['orders']);
+                    }
+                ],
+            ]
+        ]);
+
         return new Schema([
-            'query' => $queryType
+            'query' => $queryType,
+            'mutation' => $mutationType
         ]);
     }
 }
+
