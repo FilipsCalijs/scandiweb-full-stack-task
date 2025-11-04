@@ -1,56 +1,81 @@
-import React from "react";
+import React from "react"
+import DisplayItems from "./DisplayItems"
+import { getCartTotal } from "../../utils/utils"
 
 class Cart extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
-      cartItemsCount: this.loadCartItemsCount(),
-      cartItems: this.loadCartItems(),
-    };
+      cartItemsCount: this.getCartItemsCount(),
+      cartItems: this.getCartItems(),
+    }
   }
 
+// just immitation of sending data to server
   handlePlaceOrder = () => {
-    localStorage.removeItem("cartItems");
-    this.setState({ cartItemsCount: 0, cartItems: [] });
-  };
+    const { cartItems } = this.state
+    const cartTotal = getCartTotal()
 
-  loadCartItemsCount = () => {
-    const stored = JSON.parse(localStorage.getItem("cartItems")) || [];
-    return stored.length;
-  };
+    if (!cartItems.length) {
+      console.warn("Cart is empty — nothing to send.")
+      return
+    }
 
-  loadCartItems = () => {
-    const stored = JSON.parse(localStorage.getItem("cartItems")) || [];
-    return stored.reverse();
-  };
+    console.log("Send data to server (imitation):")
+    console.table(
+      cartItems.map((item) => ({
+        ID: item.id,
+        Name: item.name,
+        Quantity: item.quantity,
+        Color: item.color || "—",
+        Size: item.size || "—",
+        Capacity: item.capacity || "—",
+        Price: `$${item.price}`,
+        TotalItem: `$${(item.price * item.quantity).toFixed(2)}`,
+      }))
+    )
+    console.log(`💰 Total order sum: $${cartTotal}`)
+    console.log("✅ Order successfully 'sent' to server (simulation)")
+
+    // очистка корзины
+    localStorage.removeItem("cartItems")
+    this.setState({ cartItemsCount: 0, cartItems: [] })
+  }
+
+  getCartItemsCount = () => {
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || []
+    return cartItems.length
+  }
+
+  getCartItems = () => {
+    return (JSON.parse(localStorage.getItem("cartItems")) || []).reverse()
+  }
 
   componentDidMount() {
     this.interval = setInterval(() => {
-      const latestCount = this.loadCartItemsCount();
-      const latestItems = this.loadCartItems();
+      const newCount = this.getCartItemsCount()
+      const newItems = this.getCartItems()
 
-      const prevItemsString = JSON.stringify(this.state.cartItems);
-      const updatedItemsString = JSON.stringify(latestItems);
+      const currentItemsString = JSON.stringify(this.state.cartItems)
+      const newItemsString = JSON.stringify(newItems)
 
       if (
-        latestCount !== this.state.cartItemsCount ||
-        prevItemsString !== updatedItemsString
+        newCount !== this.state.cartItemsCount ||
+        currentItemsString !== newItemsString
       ) {
-        this.setState({
-          cartItemsCount: latestCount,
-          cartItems: latestItems,
-        });
+        this.setState({ cartItemsCount: newCount, cartItems: newItems })
       }
-    }, 500);
+    }, 500)
   }
 
   componentWillUnmount() {
-    clearInterval(this.interval);
+    clearInterval(this.interval)
   }
 
   render() {
-    const { cartItemsCount } = this.state;
-    const { isCartOpen, toggleCart } = this.props;
+    const { cartItemsCount, cartItems } = this.state
+    const { isCartOpen, toggleCart } = this.props
+    const cartTotal = getCartTotal()
 
     return (
       <div className="relative">
@@ -68,6 +93,7 @@ class Cart extends React.Component {
           onClick={toggleCart}
         >
           <img src="/cart.svg" alt="cart" />
+          {/* reminder for me - add svg img */}
         </button>
 
         {isCartOpen && (
@@ -79,8 +105,14 @@ class Cart extends React.Component {
               <span className="font-bold">MyBag</span>, {cartItemsCount} items
             </div>
 
-            <div className="m-4 mt-8 font-medium font-roboto flex justify-between">
-              <span>Total</span> <span>$0.00</span>
+            <DisplayItems cartItems={cartItems} />
+
+            <div
+              data-testid="cart-total"
+              className="m-4 mt-8 font-medium font-roboto flex justify-between"
+            >
+              <span>Total</span>
+              <span>${cartTotal}</span>
             </div>
 
             <div className="m-4 mt-8">
@@ -95,8 +127,8 @@ class Cart extends React.Component {
           </div>
         )}
       </div>
-    );
+    )
   }
 }
 
-export default Cart;
+export default Cart
