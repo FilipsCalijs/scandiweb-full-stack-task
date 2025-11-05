@@ -6,17 +6,20 @@ import client from "./apolloClient";
 import Header from "./components/Header/Header";
 import Home from "./pages/Home";
 import Category from "./pages/Category";
+import PageDetails from "./pages/Page-details"; 
 
 function App() {
   return (
     <ApolloProvider client={client}>
       <Router>
-       
+
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/all" element={<Home />} />
           <Route path="/clothes" element={<Category />} />
           <Route path="/tech" element={<Category />} />
+          <Route path="/clothes/:id" element={<PageDetails />} />
+          <Route path="/tech/:id" element={<PageDetails />} />
         </Routes>
       </Router>
     </ApolloProvider>
