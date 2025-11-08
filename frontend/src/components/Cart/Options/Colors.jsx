@@ -2,17 +2,13 @@ import React from "react";
 
 class Color extends React.Component {
   render() {
-    if (!this.props.colors || !this.props.colors.color) {
+    const { colors, onColorChange } = this.props;
+    const availableColors = colors?.availableColors || [];
+    const selectedColor = colors?.color || "";
+
+    if (!availableColors.length) {
       return null;
     }
-
-    const { availableColors, color: selectedColor } = this.props.colors;
-
-    const handleColorChange = (colorValue) => {
-      if (this.props.onColorChange) {
-        this.props.onColorChange(colorValue);
-      }
-    };
 
     return (
       <>
@@ -24,7 +20,7 @@ class Color extends React.Component {
             return (
               <div
                 key={colorOption.value}
-                onClick={() => handleColorChange(colorOption.value)}
+                onClick={() => onColorChange(colorOption.value)}
                 className={`h-6 w-6 rounded-sm cursor-pointer border-2 transition-all duration-150 ${
                   isSelected
                     ? "border-[#5ECE7B] scale-110"

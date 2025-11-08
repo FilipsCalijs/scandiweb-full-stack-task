@@ -2,17 +2,13 @@ import React from "react";
 
 class Size extends React.Component {
   render() {
-    if (!this.props.sizes || !this.props.sizes.size) {
+    const { sizes, onSizeChange } = this.props;
+    const availableSizes = sizes?.availableSizes || [];
+    const selectedSize = sizes?.size || "";
+
+    if (!availableSizes.length) {
       return null;
     }
-
-    const { availableSizes, size: selectedSize } = this.props.sizes;
-
-    const handleSizeChange = (sizeValue) => {
-      if (this.props.onSizeChange) {
-        this.props.onSizeChange(sizeValue);
-      }
-    };
 
     return (
       <>
@@ -24,7 +20,7 @@ class Size extends React.Component {
             return (
               <div
                 key={sizeOption.value}
-                onClick={() => handleSizeChange(sizeOption.value)}
+                onClick={() => onSizeChange(sizeOption.value)}
                 className={`h-8 min-w-[40px] px-2 flex items-center justify-center border-2 rounded-sm text-sm font-medium cursor-pointer transition-all duration-150 ${
                   isSelected
                     ? "bg-[#1D1F22] text-white border-[#5ECE7B] scale-105"

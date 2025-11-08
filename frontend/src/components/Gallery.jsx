@@ -1,28 +1,25 @@
 import React from "react";
+import ImgCarousel from "./Img_view/ImgCarousel";
+import MainImage from "./Img_view/MainImage";
 
-function Gallery({ data, currentImg, handleImgChange }) {
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex gap-2">
-        {data.gallery.map((img, i) => (
-          <img
-            key={i}
-            src={img}
-            alt={data.name}
-            onClick={() => handleImgChange(img)}
-            className={`w-20 h-20 object-cover cursor-pointer border-2 ${
-              img === currentImg ? "border-[#5ECE7B]" : "border-transparent"
-            }`}
-          />
-        ))}
+
+class Gallery extends React.Component {
+  render() {
+    return (
+      <div className="flex space-x-12" data-testid="product-gallery">
+        <ImgCarousel
+          images={this.props.data.gallery}
+          handleImgChange={this.props.handleImgChange}
+        />
+        <MainImage
+          currentImg={this.props.currentImg}
+          handlePrevImage={this.props.handlePrevImage}
+          handleNextImage={this.props.handleNextImage}
+        />
+      
       </div>
-      <img
-        src={currentImg}
-        alt={data.name}
-        className="w-[500px] h-[500px] object-contain"
-      />
-    </div>
-  );
+    );
+  }
 }
 
 export default Gallery;

@@ -1,5 +1,8 @@
 # scandiweb-full-stack-task
-Roadmap for me:
-1. nav panel
-2. cart modal window
-3. import db
+1. add bg with opasity after clicking 'my bag'
+2. mybag - there is error with dublicating: if you add via page detail and from main page - there will be 2 versions
+3. add img to gallery
+4. change color and size style in mybag and in gallery
+5. check figma design and mine
+6. check with test task
+7. post on hosting 
