@@ -11,35 +11,13 @@ class Cart extends React.Component {
     }
   }
 
-// just immitation of sending data to server
   handlePlaceOrder = () => {
     const { cartItems } = this.state
     const cartTotal = getCartTotal()
-
-    if (!cartItems.length) {
-      console.warn("Cart is empty — nothing to send.")
-      return
-    }
-
-    console.log("Send data to server (imitation):")
-    console.table(
-      cartItems.map((item) => ({
-        ID: item.id,
-        Name: item.name,
-        Quantity: item.quantity,
-        Color: item.color || "—",
-        Size: item.size || "—",
-        Capacity: item.capacity || "—",
-        Price: `$${item.price}`,
-        TotalItem: `$${(item.price * item.quantity).toFixed(2)}`,
-      }))
-    )
-    console.log(`💰 Total order sum: $${cartTotal}`)
-    console.log("✅ Order successfully 'sent' to server (simulation)")
-
-    // очистка корзины
+    if (!cartItems.length) return
     localStorage.removeItem("cartItems")
     this.setState({ cartItemsCount: 0, cartItems: [] })
+    console.log(`✅ Sent order, total $${cartTotal}`)
   }
 
   getCartItemsCount = () => {
@@ -55,10 +33,8 @@ class Cart extends React.Component {
     this.interval = setInterval(() => {
       const newCount = this.getCartItemsCount()
       const newItems = this.getCartItems()
-
       const currentItemsString = JSON.stringify(this.state.cartItems)
       const newItemsString = JSON.stringify(newItems)
-
       if (
         newCount !== this.state.cartItemsCount ||
         currentItemsString !== newItemsString
@@ -78,55 +54,64 @@ class Cart extends React.Component {
     const cartTotal = getCartTotal()
 
     return (
-      <div className="relative">
-        <div
-          className={`${
-            cartItemsCount === 0 ? "hidden" : ""
-          } font-roboto w-5 h-5 rounded-full absolute top-[-10px] right-[-13px] flex justify-center items-center bg-[#1D1F22] text-white`}
-        >
-          {cartItemsCount}
-        </div>
+      <>
+       {isCartOpen && (
+  <div
+    className="fixed left-0 right-0 top-20 bottom-0 bg-[#39374838] z-40"
+    onClick={toggleCart}
+  ></div>
+)}
 
-        <button
-          data-testid="cart-btn"
-          className="flex justify-center items-center cursor-pointer z-50"
-          onClick={toggleCart}
-        >
-          <img src="/cart.svg" alt="cart" />
-          {/* reminder for me - add svg img */}
-        </button>
 
-        {isCartOpen && (
+        <div className="relative z-50">
           <div
-            data-testid="cart-overlay"
-            className="absolute right-[-40px] top-[49px] w-[325px] bg-white z-50"
+            className={`${
+              cartItemsCount === 0 ? "hidden" : ""
+            } font-roboto w-5 h-5 rounded-full absolute top-[-10px] right-[-13px] flex justify-center items-center bg-[#1D1F22] text-white`}
           >
-            <div className="m-4">
-              <span className="font-bold">MyBag</span>, {cartItemsCount} items
-            </div>
-
-            <DisplayItems cartItems={cartItems} />
-
-            <div
-              data-testid="cart-total"
-              className="m-4 mt-8 font-medium font-roboto flex justify-between"
-            >
-              <span>Total</span>
-              <span>${cartTotal}</span>
-            </div>
-
-            <div className="m-4 mt-8">
-              <button
-                disabled={cartItemsCount === 0}
-                onClick={this.handlePlaceOrder}
-                className="bg-[#5ECE7B] disabled:bg-[#99dbab] w-[292px] h-[43px] text-white uppercase"
-              >
-                Place Order
-              </button>
-            </div>
+            {cartItemsCount}
           </div>
-        )}
-      </div>
+
+          <button
+            data-testid="cart-btn"
+            className="flex justify-center items-center cursor-pointer"
+            onClick={toggleCart}
+          >
+            <img src="/cart.svg" alt="cart" />
+          </button>
+
+          {isCartOpen && (
+            <div
+              data-testid="cart-overlay"
+              className="absolute right-[-40px] top-[49px] w-[325px] bg-white z-[45] shadow-lg"
+            >
+              <div className="m-4">
+                <span className="font-bold">MyBag</span>, {cartItemsCount} items
+              </div>
+
+              <DisplayItems cartItems={cartItems} />
+
+              <div
+                data-testid="cart-total"
+                className="m-4 mt-8 font-medium font-roboto flex justify-between"
+              >
+                <span>Total</span>
+                <span>${cartTotal}</span>
+              </div>
+
+              <div className="m-4 mt-8">
+                <button
+                  disabled={cartItemsCount === 0}
+                  onClick={this.handlePlaceOrder}
+                  className="bg-[#5ECE7B] disabled:bg-[#99dbab] w-[292px] h-[43px] text-white uppercase"
+                >
+                  Place Order
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </>
     )
   }
 }

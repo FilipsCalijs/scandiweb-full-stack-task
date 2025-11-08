@@ -53,7 +53,7 @@ function Home() {
           <p className="text-[42px] ml-24 text-[#1D1F22]">ALL</p>
         </div>
 
-        <div className="w-full flex justify-center items-center">
+        <div className="w-full flex justify-center items-center ">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-16">
             {data.products.map((product, index) => (
               <Card key={index} data={product} />

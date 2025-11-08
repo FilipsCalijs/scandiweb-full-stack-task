@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ApolloProvider } from "@apollo/client";
 import client from "./apolloClient";
 
-import Header from "./components/Header/Header";
+
 import Home from "./pages/Home";
 import Category from "./pages/Category";
 import PageDetails from "./pages/Page-details"; 

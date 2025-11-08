@@ -31,8 +31,15 @@ class Header extends React.Component {
   };
 
   componentDidMount() {
-    document.addEventListener("click", this.handleOutsideClick);
-  }
+  document.addEventListener("click", this.handleOutsideClick)
+
+  window.addEventListener("storage", (e) => {
+    if (e.key === "openCart" && e.newValue === "true") {
+      this.setState({ isCartOpen: true })
+      localStorage.removeItem("openCart")
+    }
+  })
+}
 
   componentWillUnmount() {
     document.removeEventListener("click", this.handleOutsideClick);
@@ -43,7 +50,8 @@ class Header extends React.Component {
     const { isCartOpen } = this.state;
 
     return (
-      <header className="w-full h-20 flex items-center justify-around relative">
+      <header className="w-full h-20 flex items-center justify-around relative z-[60]">
+
         <ul className="flex list-none gap-10">
           {this.links.map(({ path, label }) => {
             const isActive = currentPath === label.toLowerCase();

@@ -17,7 +17,7 @@ class Card extends React.Component {
       currencySymbol,
     };
 
-    // Если у товара нет атрибутов
+   
     if (!Array.isArray(attributes) || attributes.length === 0) {
       addToCart(baseItem);
       return;
@@ -62,7 +62,7 @@ class Card extends React.Component {
             inStock ? "" : "group-hover:hidden"
           } absolute hidden group-hover:flex w-[52px] h-[52px] top-[304px] left-[287px] z-10 bg-[#5ECE7B] rounded-full justify-center items-center`}
         >
-          <img src="white-cart.svg" alt="Add to cart" />
+          <img src="cart.svg" alt="Add to cart" />
         </button>
 
         <a
