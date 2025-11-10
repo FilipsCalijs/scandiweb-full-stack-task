@@ -5,68 +5,60 @@ import Color from "./Options/Colors.jsx";
 import Capacity from "./Options/Capacity";
 
 class DisplayItems extends React.Component {
-  handleCapacityChange = (itemID, newCapacity) => {
+  updateItemInCart = (itemID, updatedFields) => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     const updatedCart = cartItems.map((i) =>
-      i.itemID === itemID ? { ...i, capacity: newCapacity } : i
+      i.itemID === itemID
+        ? {
+            ...i,
+            ...updatedFields,
+            itemID: `${i.id}-${updatedFields.size || i.size || ""}-${updatedFields.color || i.color || ""}-${updatedFields.capacity || i.capacity || ""}-${Date.now()}`,
+          }
+        : i
     );
     localStorage.setItem("cartItems", JSON.stringify(updatedCart));
+  };
+
+  handleCapacityChange = (itemID, newCapacity) => {
+    this.updateItemInCart(itemID, { capacity: newCapacity });
   };
 
   handleColorChange = (itemID, newColor) => {
-    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-    const updatedCart = cartItems.map((i) =>
-      i.itemID === itemID ? { ...i, color: newColor } : i
-    );
-    localStorage.setItem("cartItems", JSON.stringify(updatedCart));
+    this.updateItemInCart(itemID, { color: newColor });
   };
 
   handleSizeChange = (itemID, newSize) => {
-    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-    const updatedCart = cartItems.map((i) =>
-      i.itemID === itemID ? { ...i, size: newSize } : i
-    );
-    localStorage.setItem("cartItems", JSON.stringify(updatedCart));
+    this.updateItemInCart(itemID, { size: newSize });
   };
 
   render() {
     return (
-      <div className="m-4 mt-8 max-h-[500px] space-y-10 no-scrollbar overflow-y-auto ">
-        {this.props.cartItems.map((item, index) => (
+      <div className="m-4 mt-8 max-h-[500px] space-y-10 no-scrollbar overflow-y-auto">
+        {this.props.cartItems.map((item) => (
           <div
-            data-testid={`cart-item-attribute-${item.name
-              .toLowerCase()
-              .replace(/\s+/g, "-")}`}
+            key={item.itemID}
             className="flex justify-around"
-            key={index}
+            data-testid={`cart-item-${item.name.toLowerCase().replace(/\s+/g, "-")}`}
           >
             <div className="w-[136px]">
-              <div>
-                <p className="font-light">{item.name}</p>
-                <p className="font-bold">
-                  {item.currencySymbol}
-                  {item.price}
-                </p>
+              <p className="font-light">{item.name}</p>
+              <p className="font-bold">
+                {item.currencySymbol}
+                {item.price}
+              </p>
 
-                <Size
-                  sizes={item}
-                  onSizeChange={(newSize) =>
-                    this.handleSizeChange(item.itemID, newSize)
-                  }
-                />
-                <Color
-                  colors={item}
-                  onColorChange={(newColor) =>
-                    this.handleColorChange(item.itemID, newColor)
-                  }
-                />
-                <Capacity
-                  capacities={item}
-                  onCapacityChange={(newCap) =>
-                    this.handleCapacityChange(item.itemID, newCap)
-                  }
-                />
-              </div>
+              <Size
+                sizes={item}
+                onSizeChange={(newSize) => this.handleSizeChange(item.itemID, newSize)}
+              />
+              <Color
+                colors={item}
+                onColorChange={(newColor) => this.handleColorChange(item.itemID, newColor)}
+              />
+              <Capacity
+                capacities={item}
+                onCapacityChange={(newCap) => this.handleCapacityChange(item.itemID, newCap)}
+              />
             </div>
 
             <QuantityController item={item} />

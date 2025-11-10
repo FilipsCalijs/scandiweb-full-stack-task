@@ -6,14 +6,12 @@ class Color extends React.Component {
     const availableColors = colors?.availableColors || [];
     const selectedColor = colors?.color || "";
 
-    if (!availableColors.length) {
-      return null;
-    }
+    if (!availableColors.length) return null;
 
     return (
       <>
-        <p className="mb-2">Color:</p>
-        <div className="flex space-x-3">
+        <p className="text-[16px] font-semibold text-[#1D1F22] mb-2">Color:</p>
+        <div className="flex flex-wrap gap-4">
           {availableColors.map((colorOption) => {
             const isSelected = selectedColor === colorOption.value;
 
@@ -21,15 +19,22 @@ class Color extends React.Component {
               <div
                 key={colorOption.value}
                 onClick={() => onColorChange(colorOption.value)}
-                className={`h-6 w-6 rounded-sm cursor-pointer border-2 transition-all duration-150 ${
+                className={`relative h-8 w-8 cursor-pointer transition-all duration-150 ${
                   isSelected
-                    ? "border-[#5ECE7B] scale-110"
-                    : "border-transparent hover:border-gray-400"
+                    ? "border-[2px] border-[#5ECE7B] p-[2px]"
+                    : "border-[2px] border-transparent hover:border-gray-400"
                 }`}
-                style={{
-                  backgroundColor: colorOption.value,
-                }}
-              />
+              >
+                <div
+                  className="h-full w-full"
+                  style={{
+                    backgroundColor: colorOption.value,
+                  }}
+                ></div>
+                {isSelected && (
+                  <div className="absolute inset-[1px] border-[1px] border-white pointer-events-none"></div>
+                )}
+              </div>
             );
           })}
         </div>

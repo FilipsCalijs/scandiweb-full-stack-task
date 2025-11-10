@@ -11,15 +11,6 @@ class Cart extends React.Component {
     }
   }
 
-  handlePlaceOrder = () => {
-    const { cartItems } = this.state
-    const cartTotal = getCartTotal()
-    if (!cartItems.length) return
-    localStorage.removeItem("cartItems")
-    this.setState({ cartItemsCount: 0, cartItems: [] })
-    console.log(`✅ Sent order, total $${cartTotal}`)
-  }
-
   getCartItemsCount = () => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || []
     return cartItems.length
@@ -27,6 +18,45 @@ class Cart extends React.Component {
 
   getCartItems = () => {
     return (JSON.parse(localStorage.getItem("cartItems")) || []).reverse()
+  }
+
+  handlePlaceOrder = async () => {
+    const { cartItems } = this.state
+    const cartTotal = getCartTotal()
+    if (!cartItems.length) return
+
+    const orderData = {
+      orderId: `order-${Date.now()}`,
+      totalAmount: cartTotal,
+      items: cartItems.map((item) => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        currency: item.currencySymbol,
+        quantity: item.quantity,
+        color: item.color || null,
+        size: item.size || null,
+        capacity: item.capacity || null,
+        image: item.img || "",
+      })),
+      createdAt: new Date().toISOString(),
+    }
+
+    console.log("🛒 Sending order to server:", orderData)
+
+    try {
+      await fetch("http://localhost:5000/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderData),
+      })
+      console.log("✅ Order successfully sent!")
+    } catch (err) {
+      console.error("❌ Error sending order:", err)
+    }
+
+    localStorage.removeItem("cartItems")
+    this.setState({ cartItemsCount: 0, cartItems: [] })
   }
 
   componentDidMount() {
@@ -55,13 +85,12 @@ class Cart extends React.Component {
 
     return (
       <>
-       {isCartOpen && (
-  <div
-    className="fixed left-0 right-0 top-20 bottom-0 bg-[#39374838] z-40"
-    onClick={toggleCart}
-  ></div>
-)}
-
+        {isCartOpen && (
+          <div
+            className="fixed left-0 right-0 top-20 bottom-0 bg-[#39374838] z-40"
+            onClick={toggleCart}
+          ></div>
+        )}
 
         <div className="relative z-50">
           <div

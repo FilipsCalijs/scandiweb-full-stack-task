@@ -34,6 +34,49 @@
 
 .customShadow:hover { box-shadow: 0 4px 35px 0 #a8acb030; }
 
+
+@media (max-width: 767px) {
+  [data-testid="cart-overlay"] {
+    position: fixed !important;
+    top: 80px !important;
+    right: 10px !important;
+    width: 90% !important;
+    max-width: 320px !important;
+    background: #fff !important;
+    z-index: 50 !important;
+    border-radius: 4px !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  [data-testid="cart-total"] {
+    margin: 1rem !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    font-weight: 500 !important;
+  }
+
+  [data-testid="cart-btn"] img {
+    width: 26px !important;
+    height: 26px !important;
+  }
+
+  [data-testid="cart-btn"] {
+    padding: 0.25rem !important;
+  }
+
+  .font-roboto.w-5.h-5.rounded-full.absolute {
+    top: -6px !important;
+    right: -8px !important;
+    width: 18px !important;
+    height: 18px !important;
+    font-size: 12px !important;
+  }
+
+  .bg-\[\#5ECE7B\].disabled\:bg-\[\#99dbab\].w-\[292px\].h-\[43px\].text-white.uppercase {
+    width: 100% !important;
+  }
+}
+
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

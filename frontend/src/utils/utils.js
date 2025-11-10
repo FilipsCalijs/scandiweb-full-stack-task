@@ -1,32 +1,28 @@
 function addToCart(product) {
-  let cartItems = JSON.parse(localStorage.getItem("cartItems")) || []
+  let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
 
-  const keyMatch = (a, b) =>
-    a.id === b.id &&
-    (a.size || "") === (b.size || "") &&
-    (a.color || "") === (b.color || "") &&
-    (a.capacity || "") === (b.capacity || "")
-
-  const existingProduct = cartItems.find((item) => keyMatch(item, product))
+  const existingProduct = cartItems.find(
+    (item) =>
+      item.id === product.id &&
+      item.size === product.size &&
+      item.color === product.color &&
+      item.capacity === product.capacity
+  );
 
   if (existingProduct) {
-    existingProduct.quantity = (existingProduct.quantity || 1) + 1
+    existingProduct.quantity += 1;
   } else {
-    cartItems.push({ ...product, quantity: 1 })
+    const newProduct = {
+      ...product,
+      itemID: `${product.id}-${product.size || ""}-${product.color || ""}-${product.capacity || ""}-${Date.now()}`,
+      quantity: 1,
+    };
+    cartItems.push(newProduct);
   }
 
-  const merged = []
-  for (const item of cartItems) {
-    const duplicate = merged.find((m) => keyMatch(m, item))
-    if (duplicate) {
-      duplicate.quantity += item.quantity
-    } else {
-      merged.push({ ...item })
-    }
-  }
-
-  localStorage.setItem("cartItems", JSON.stringify(merged))
+  localStorage.setItem("cartItems", JSON.stringify(cartItems));
 }
+
 
 function cleanCartDuplicates() {
   let cartItems = JSON.parse(localStorage.getItem("cartItems")) || []
