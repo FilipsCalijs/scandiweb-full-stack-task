@@ -15,7 +15,7 @@ class GraphQLSchema {
     }
 
     public function getSchema() {
-        // ProductType definition
+     
         $productType = new ObjectType([
             'name' => 'Product',
             'fields' => [
@@ -58,7 +58,7 @@ class GraphQLSchema {
             ]
         ]);
 
-        // CategoryType definition
+        
         $categoryType = new ObjectType([
             'name' => 'Category',
             'fields' => [
@@ -67,7 +67,6 @@ class GraphQLSchema {
             ]
         ]);
 
-        // Query definition
         $queryType = new ObjectType([
             'name' => 'Query',
             'fields' => [
@@ -155,7 +154,6 @@ class GraphQLSchema {
             ]
         ]);
 
-        // Mutation definition
         $mutationType = new ObjectType([
             'name' => 'Mutation',
             'fields' => [

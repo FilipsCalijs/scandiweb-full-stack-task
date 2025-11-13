@@ -8,7 +8,11 @@ use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Schema;
 use Throwable;
 
-class GraphQL {
+abstract class AbstractGraphQLController {
+    abstract static public function handle();
+}
+
+class GraphQL extends AbstractGraphQLController {
     static public function handle() {
         header("Access-Control-Allow-Origin: *");
         header("Access-Control-Allow-Headers: Content-Type");

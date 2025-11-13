@@ -1,6 +1,13 @@
 import React from "react"
+import { ApolloConsumer, gql } from "@apollo/client"
 import DisplayItems from "./DisplayItems"
 import { getCartTotal } from "../../utils/utils"
+
+const PLACE_ORDER = gql`
+  mutation PlaceOrder($orders: [OrderInput!]!) {
+    placeOrder(orders: $orders)
+  }
+`
 
 class Cart extends React.Component {
   constructor(props) {
@@ -20,43 +27,44 @@ class Cart extends React.Component {
     return (JSON.parse(localStorage.getItem("cartItems")) || []).reverse()
   }
 
-  handlePlaceOrder = async () => {
+  handlePlaceOrder = async (client) => {
     const { cartItems } = this.state
     const cartTotal = getCartTotal()
     if (!cartItems.length) return
 
+    const orders = cartItems.map((item) => ({
+      id: item.id,
+      quantity: item.quantity,
+      size: item.size || "",
+      color: item.color || "",
+      capacity: item.capacity || "",
+    }))
+
     const orderData = {
       orderId: `order-${Date.now()}`,
       totalAmount: cartTotal,
-      items: cartItems.map((item) => ({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        currency: item.currencySymbol,
-        quantity: item.quantity,
-        color: item.color || null,
-        size: item.size || null,
-        capacity: item.capacity || null,
-        image: item.img || "",
-      })),
+      items: orders,
       createdAt: new Date().toISOString(),
     }
 
-    console.log("🛒 Sending order to server:", orderData)
+    console.log("🛒 Sending order via GraphQL:", orderData)
 
     try {
-      await fetch("http://localhost:5000/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderData),
+      const { data } = await client.mutate({
+        mutation: PLACE_ORDER,
+        variables: { orders },
       })
-      console.log("✅ Order successfully sent!")
-    } catch (err) {
-      console.error("❌ Error sending order:", err)
-    }
 
-    localStorage.removeItem("cartItems")
-    this.setState({ cartItemsCount: 0, cartItems: [] })
+      if (data.placeOrder) {
+        console.log("✅ Order successfully sent via GraphQL!")
+        localStorage.removeItem("cartItems")
+        this.setState({ cartItemsCount: 0, cartItems: [] })
+      } else {
+        console.error("❌ Server responded with false:", data)
+      }
+    } catch (err) {
+      console.error("❌ GraphQL mutation error:", err)
+    }
   }
 
   componentDidMount() {
@@ -102,12 +110,12 @@ class Cart extends React.Component {
           </div>
 
           <button
-            data-testid="cart-btn"
-            className="flex justify-center items-center cursor-pointer"
-            onClick={toggleCart}
-          >
-            <img src="/cart.svg" alt="cart" />
-          </button>
+              data-testid="cart-btn"
+              className="flex justify-center items-center cursor-pointer"
+              onClick={toggleCart}
+            >
+              <img src="/cart.svg" alt="cart" />
+            </button>
 
           {isCartOpen && (
             <div
@@ -115,7 +123,7 @@ class Cart extends React.Component {
               className="absolute right-[-40px] top-[49px] w-[325px] bg-white z-[45] shadow-lg"
             >
               <div className="m-4">
-                <span className="font-bold">MyBag</span>, {cartItemsCount} items
+              <span className="font-bold">MyBag</span>, {cartItemsCount} {cartItemsCount === 1 ? "Item" : "Items"}
               </div>
 
               <DisplayItems cartItems={cartItems} />
@@ -129,13 +137,17 @@ class Cart extends React.Component {
               </div>
 
               <div className="m-4 mt-8">
-                <button
-                  disabled={cartItemsCount === 0}
-                  onClick={this.handlePlaceOrder}
-                  className="bg-[#5ECE7B] disabled:bg-[#99dbab] w-[292px] h-[43px] text-white uppercase"
-                >
-                  Place Order
-                </button>
+                <ApolloConsumer>
+                  {(client) => (
+                    <button
+                      disabled={cartItemsCount === 0}
+                      onClick={() => this.handlePlaceOrder(client)}
+                      className="bg-[#5ECE7B] disabled:bg-[#99dbab] w-[292px] h-[43px] text-white uppercase"
+                    >
+                      Place Order
+                    </button>
+                  )}
+                </ApolloConsumer>
               </div>
             </div>
           )}

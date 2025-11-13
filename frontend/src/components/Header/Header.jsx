@@ -56,6 +56,8 @@ class Header extends React.Component {
 
     return (
       <header className="w-full h-20 flex items-center justify-between px-6 sm:px-12 bg-white relative z-[60] header">
+
+      
         <div className="menu-btn-mobile flex items-center gap-4 md:hidden">
           <button onClick={this.toggleMenu} className="focus:outline-none menu-btn">
             <svg
@@ -79,6 +81,7 @@ class Header extends React.Component {
           </button>
         </div>
 
+        
         <ul
           className={`nav-list ${
             isMenuOpen ? "nav-open" : ""
@@ -89,12 +92,10 @@ class Header extends React.Component {
             return (
               <li key={path} className={isActive ? "active" : ""}>
                 <a
-                  className="nav-link text-[#1d1f22] text-lg md:text-base no-underline"
-                  data-testid={
-                    isActive ? "active-category-link" : "category-link"
-                  }
                   href={path}
+                  data-testid={isActive ? "active-category-link" : "category-link"}
                   onClick={() => this.setState({ isMenuOpen: false })}
+                  className="nav-link text-[#1d1f22] text-lg md:text-base no-underline"
                 >
                   {label}
                 </a>
@@ -103,10 +104,12 @@ class Header extends React.Component {
           })}
         </ul>
 
+      
         <a href="/" className="logo-link absolute left-1/2 -translate-x-1/2 md:static">
           <img className="w-9 md:w-auto logo" src="/logo.svg" alt="logo" />
         </a>
 
+      
         <div className="relative cart-wrapper" ref={(n) => (this.cartRef = n)}>
           <Cart isCartOpen={isCartOpen} toggleCart={this.toggleCart} />
         </div>

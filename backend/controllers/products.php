@@ -1,19 +1,47 @@
 <?php
 
-interface CategoryInterface {
-    public function getQuery(): string;
+abstract class AbstractCategory {
+    abstract public function getQuery(): string;
 }
 
-class Product {
-    private string $id;
-    private string $name;
-    private bool $inStock;
-    private array $gallery;
-    private string $description;
-    private string $category;
-    private array $attributes;
-    private array $prices;
-    private string $brand;
+class AllCategory extends AbstractCategory {
+    public function getQuery(): string {
+        return "SELECT * FROM products";
+    }
+}
+
+class ClothesCategory extends AbstractCategory {
+    public function getQuery(): string {
+        return "SELECT * FROM products WHERE category = 'Clothes'";
+    }
+}
+
+class TechCategory extends AbstractCategory {
+    public function getQuery(): string {
+        return "SELECT * FROM products WHERE category = 'Tech'";
+    }
+}
+
+class CategoryFactory {
+    public static function create(string $category): AbstractCategory {
+        return match (strtolower($category)) {
+            "tech" => new TechCategory(),
+            "clothes" => new ClothesCategory(),
+            default => new AllCategory(),
+        };
+    }
+}
+
+abstract class AbstractProduct {
+    protected string $id;
+    protected string $name;
+    protected bool $inStock;
+    protected array $gallery;
+    protected string $description;
+    protected string $category;
+    protected array $attributes;
+    protected array $prices;
+    protected string $brand;
 
     public function __construct(array $data) {
         $this->id = $data['id'];
@@ -27,7 +55,6 @@ class Product {
         $this->brand = $data['brand'];
     }
 
-  
     public function getId(): string { return $this->id; }
     public function getName(): string { return $this->name; }
     public function isInStock(): bool { return $this->inStock; }
@@ -39,32 +66,23 @@ class Product {
     public function getBrand(): string { return $this->brand; }
 }
 
-class AllCategory implements CategoryInterface {
-    public function getQuery(): string {
-        return "SELECT * FROM products";
-    }
+class Product extends AbstractProduct {
 }
 
-class ClothesCategory implements CategoryInterface {
-    public function getQuery(): string {
-        return "SELECT * FROM products WHERE category = 'Clothes'";
+abstract class AbstractCategoryModel {
+    protected string $id;
+    protected string $name;
+
+    public function __construct(array $data) {
+        $this->id = $data['id'];
+        $this->name = $data['name'];
     }
+
+    public function getId(): string { return $this->id; }
+    public function getName(): string { return $this->name; }
 }
 
-class TechCategory implements CategoryInterface {
-    public function getQuery(): string {
-        return "SELECT * FROM products WHERE category = 'Tech'";
-    }
-}
-
-class CategoryFactory {
-    public static function create(string $category): CategoryInterface {
-        return match (strtolower($category)) {
-            "tech" => new TechCategory(),
-            "clothes" => new ClothesCategory(),
-            default => new AllCategory(),
-        };
-    }
+class Category extends AbstractCategoryModel {
 }
 
 class Products {
@@ -74,12 +92,11 @@ class Products {
         $this->db = $db->getConnection();
     }
 
-    public function getProducts(CategoryInterface $category): array {
+    public function getProducts(AbstractCategory $category): array {
         $query = $category->getQuery();
         $statement = $this->db->prepare($query);
         $statement->execute();
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
-
         return $this->mapProducts($rows);
     }
 
@@ -95,8 +112,7 @@ class Products {
         $statement = $this->db->prepare("SELECT * FROM categories");
         $statement->execute();
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-        return $this->mapCategories($rows); 
+        return $this->mapCategories($rows);
     }
 
     public function getProductById(string $id): ?Product {
@@ -104,24 +120,7 @@ class Products {
         $statement->bindParam(':id', $id, PDO::PARAM_STR);
         $statement->execute();
         $row = $statement->fetch(PDO::FETCH_ASSOC);
-
-        if ($row) {
-            return new Product($row);
-        }
-        return null;    
-        }
-}
-
-class Category {
-    private string $id;
-    private string $name;
-
-    public function __construct(array $data) {
-        $this->id = $data['id'];
-        $this->name = $data['name'];
+        if ($row) return new Product($row);
+        return null;
     }
-
-    public function getId(): string { return $this->id; } 
-
-    public function getName(): string { return $this->name; }
 }

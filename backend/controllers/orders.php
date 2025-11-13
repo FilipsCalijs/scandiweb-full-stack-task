@@ -1,6 +1,10 @@
 <?php
 
-class Orders {
+abstract class AbstractOrders {
+    abstract public function placeOrder($orders);
+}
+
+class Orders extends AbstractOrders {
     private $db;
 
     public function __construct(Database $db) {
@@ -8,14 +12,14 @@ class Orders {
     }
 
     public function placeOrder($orders) {
-        $this->db->beginTransaction(); 
+        $this->db->beginTransaction();
         try {
             foreach ($orders as &$order) {
                 $statement = $this->db->prepare("
                     INSERT INTO orders (product_id, quantity, size, color, capacity)
                     VALUES (:product_id, :quantity, :size, :color, :capacity)
                 ");
-    
+
                 $statement->bindParam(':product_id', $order['id'], PDO::PARAM_STR);
                 $statement->bindParam(':quantity', $order['quantity'], PDO::PARAM_INT);
                 $statement->bindParam(':size', $order['size'], PDO::PARAM_STR);
@@ -24,15 +28,13 @@ class Orders {
 
                 $statement->execute();
             }
-            $this->db->commit(); 
-            return "Orders created successfully."; 
-    
+
+            $this->db->commit();
+            return true;
+
         } catch (Exception $e) {
-            $this->db->rollBack(); 
-            throw new Exception("Failed to place orders: " . $e->getMessage());
+            $this->db->rollBack();
+            throw new Exception($e->getMessage());
         }
     }
-    
-    
-    
 }
