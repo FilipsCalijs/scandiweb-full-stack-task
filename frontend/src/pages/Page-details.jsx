@@ -75,7 +75,6 @@ class PagDetails extends React.Component {
         loading: false,
       });
     } catch (err) {
-      console.error(err);
       this.setState({ error: err.message, loading: false });
     }
   }
@@ -95,7 +94,7 @@ class PagDetails extends React.Component {
       img: product.gallery[0],
       name: product.name,
       quantity: 1,
-      price: product.prices[0].amount,
+      price: Number(product.prices[0].amount.toFixed(2)),
       currencySymbol: product.prices[0].currency.symbol,
       availableSizes: findAttribute(product.attributes, "Size"),
       availableColors: findAttribute(product.attributes, "Color"),
@@ -110,12 +109,14 @@ class PagDetails extends React.Component {
   };
 
   handleImgChange = (img) => this.setState({ currentImg: img });
+
   handlePrevImage = () => {
     const { product, currentImg } = this.state;
     const index = product.gallery.indexOf(currentImg);
     const prevIndex = (index - 1 + product.gallery.length) % product.gallery.length;
     this.handleImgChange(product.gallery[prevIndex]);
   };
+
   handleNextImage = () => {
     const { product, currentImg } = this.state;
     const index = product.gallery.indexOf(currentImg);
@@ -159,42 +160,48 @@ class PagDetails extends React.Component {
             <p className="font-semibold text-3xl">{product.name}</p>
 
             {hasSize && (
-              <Size
-                sizes={{
-                  availableSizes:
-                    product.attributes.find((a) => a.id === "Size")?.items || [],
-                  size: selectedSize,
-                }}
-                onSizeChange={this.handleSizeChange}
-              />
+              <div data-testid="product-attribute-size">
+                <Size
+                  sizes={{
+                    availableSizes:
+                      product.attributes.find((a) => a.id === "Size")?.items || [],
+                    size: selectedSize,
+                  }}
+                  onSizeChange={this.handleSizeChange}
+                />
+              </div>
             )}
 
             {hasColor && (
-              <Color
-                colors={{
-                  availableColors:
-                    product.attributes.find((a) => a.id === "Color")?.items || [],
-                  color: selectedColor,
-                }}
-                onColorChange={this.handleColorChange}
-              />
+              <div data-testid="product-attribute-color">
+                <Color
+                  colors={{
+                    availableColors:
+                      product.attributes.find((a) => a.id === "Color")?.items || [],
+                    color: selectedColor,
+                  }}
+                  onColorChange={this.handleColorChange}
+                />
+              </div>
             )}
 
             {hasCapacity && (
-              <Capacity
-                capacities={{
-                  availableCapacities:
-                    product.attributes.find((a) => a.id === "Capacity")?.items || [],
-                  capacity: selectedCapacity,
-                }}
-                onCapacityChange={this.handleCapacityChange}
-              />
+              <div data-testid="product-attribute-capacity">
+                <Capacity
+                  capacities={{
+                    availableCapacities:
+                      product.attributes.find((a) => a.id === "Capacity")?.items || [],
+                    capacity: selectedCapacity,
+                  }}
+                  onCapacityChange={this.handleCapacityChange}
+                />
+              </div>
             )}
 
             <p className="uppercase mt-4 text-lg font-bold">Price:</p>
             <p className="uppercase mt-4 text-2xl font-bold">
               {product.prices[0].currency.symbol}
-              {product.prices[0].amount}
+              {product.prices[0].amount.toFixed(2)}
             </p>
 
             <button
@@ -211,7 +218,10 @@ class PagDetails extends React.Component {
               Add To Cart
             </button>
 
-            <div className="lg:pr-[150px] mt-6 max-w-[900px]" data-testid="product-description">
+            <div
+              className="lg:pr-[150px] mt-6 max-w-[900px]"
+              data-testid="product-description"
+            >
               {parse(product.description || "")}
             </div>
           </div>
