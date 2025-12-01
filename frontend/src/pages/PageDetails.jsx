@@ -44,9 +44,10 @@ const GET_PRODUCT = gql`
   }
 `;
 
-class PagDetails extends React.Component {
+class PageDetails extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       product: null,
       currentImg: null,
@@ -79,15 +80,24 @@ class PagDetails extends React.Component {
     }
   }
 
-  handleSizeChange = (value) => this.setState({ selectedSize: value });
-  handleColorChange = (value) => this.setState({ selectedColor: value });
-  handleCapacityChange = (value) => this.setState({ selectedCapacity: value });
+  handleSizeChange = (value) => {
+    this.setState({ selectedSize: value });
+  };
+
+  handleColorChange = (value) => {
+    this.setState({ selectedColor: value });
+  };
+
+  handleCapacityChange = (value) => {
+    this.setState({ selectedCapacity: value });
+  };
 
   handleAddToCart = () => {
     const { product, selectedSize, selectedColor, selectedCapacity } = this.state;
 
-    const findAttribute = (attributes, attributeId) =>
-      attributes.find((attr) => attr.id === attributeId)?.items || [];
+    const findAttribute = (attributes, attributeId) => {
+      return attributes.find((attr) => attr.id === attributeId)?.items || [];
+    };
 
     const item = {
       id: product.id,
@@ -108,7 +118,9 @@ class PagDetails extends React.Component {
     localStorage.setItem("isCartOpen", JSON.stringify(true));
   };
 
-  handleImgChange = (img) => this.setState({ currentImg: img });
+  handleImgChange = (img) => {
+    this.setState({ currentImg: img });
+  };
 
   handlePrevImage = () => {
     const { product, currentImg } = this.state;
@@ -135,9 +147,15 @@ class PagDetails extends React.Component {
       error,
     } = this.state;
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error}</p>;
-    if (!product) return <p>Product not found</p>;
+    if (loading) return null;
+
+    if (error) {
+      return <p>Error: {error}</p>;
+    }
+
+    if (!product) {
+      return <p>Product not found</p>;
+    }
 
     const hasSize = product.attributes.some((attr) => attr.id === "Size");
     const hasColor = product.attributes.some((attr) => attr.id === "Color");
@@ -231,4 +249,4 @@ class PagDetails extends React.Component {
   }
 }
 
-export default PagDetails;
+export default PageDetails;

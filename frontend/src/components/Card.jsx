@@ -8,6 +8,7 @@ class Card extends React.Component {
 
     const priceData = prices?.[0] || {};
     const currencySymbol = priceData.currency?.symbol || "$";
+
     const baseItem = {
       id,
       name,
@@ -17,7 +18,6 @@ class Card extends React.Component {
       currencySymbol,
     };
 
-   
     if (!Array.isArray(attributes) || attributes.length === 0) {
       addToCart(baseItem);
       return;
@@ -25,7 +25,11 @@ class Card extends React.Component {
 
     const getOptions = (attrId) => {
       const attr = attributes.find((a) => a.id === attrId);
-      return Array.isArray(attr?.items) ? attr.items : [];
+      if (Array.isArray(attr?.items)) {
+        return attr.items;
+      } else {
+        return [];
+      }
     };
 
     const [size] = getOptions("Size");
@@ -34,13 +38,23 @@ class Card extends React.Component {
 
     const productForCart = {
       ...baseItem,
-      ...(size && { size: size.value }),
-      ...(color && { color: color.value }),
-      ...(capacity && { capacity: capacity.displayValue }),
-      availableSizes: getOptions("Size"),
-      availableColors: getOptions("Color"),
-      availableCapacities: getOptions("Capacity"),
     };
+
+    if (size) {
+      productForCart.size = size.value;
+    }
+
+    if (color) {
+      productForCart.color = color.value;
+    }
+
+    if (capacity) {
+      productForCart.capacity = capacity.displayValue;
+    }
+
+    productForCart.availableSizes = getOptions("Size");
+    productForCart.availableColors = getOptions("Color");
+    productForCart.availableCapacities = getOptions("Capacity");
 
     addToCart(productForCart);
   };
@@ -48,21 +62,19 @@ class Card extends React.Component {
   render() {
     const { data } = this.props;
     const { inStock, gallery, name, prices, category } = data;
-  
+
     const isOut = !inStock;
-  
+
     return (
       <div
         className="relative flex flex-col justify-center items-center group w-[386px] h-[444px] customShadow"
         data-testid={`product-${name.toLowerCase().replace(/\s+/g, "-")}`}
       >
-  
-       
+
         {isOut && (
           <div className="out-of-stock-label">OUT OF STOCK</div>
         )}
-  
-       
+
         {!isOut && (
           <button
             onClick={this.handleCartClick}
@@ -71,8 +83,7 @@ class Card extends React.Component {
             <img src="cart.svg" alt="Add to cart" />
           </button>
         )}
-  
-      
+
         <a
           href={`/${category}/${data.id}`}
           className={isOut ? "out-of-stock" : ""}
@@ -83,8 +94,7 @@ class Card extends React.Component {
             className="w-[354px] h-[330px] object-contain"
           />
         </a>
-  
-        
+
         <div className="w-[354px] h-[58px] mt-[24px]">
           <p className="text-[18px] font-light">{name}</p>
           <p className="text-[18px]">
@@ -92,10 +102,10 @@ class Card extends React.Component {
             {prices?.[0]?.amount.toFixed(2)}
           </p>
         </div>
+
       </div>
     );
   }
-  
 }
 
 export default Card;

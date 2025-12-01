@@ -3,32 +3,32 @@ import React from "react";
 class Color extends React.Component {
   render() {
     const { colors, onColorChange, disabled } = this.props;
+
     const availableColors = colors?.availableColors || [];
     const selectedColor = colors?.color || "";
     const attributeName = "color";
 
-    if (!availableColors.length) return null;
+    if (!availableColors.length) {
+      return null;
+    }
 
     return (
       <>
         <p className="text-[16px] font-semibold text-[#1D1F22] mb-2">Color:</p>
 
         <div
-          data-testid={`cart-item-attribute-${attributeName}`}
+          data-testid={`product-attribute-${attributeName}-container`}
           className="flex flex-wrap gap-4"
         >
           {availableColors.map((colorOption) => {
             const isSelected = selectedColor === colorOption.value;
             const optionKebab = colorOption.value.toLowerCase().replace(/\s+/g, "-");
+            const optionId = colorOption.id || colorOption.value;
 
             return (
               <div
                 key={colorOption.value}
-                data-testid={
-                  isSelected
-                    ? `cart-item-attribute-${attributeName}-${optionKebab}-selected`
-                    : `cart-item-attribute-${attributeName}-${optionKebab}`
-                }
+                data-testid={`product-attribute-color-${optionId}`}
                 onClick={!disabled ? () => onColorChange(colorOption.value) : undefined}
                 className={`relative h-8 w-8 transition-all duration-150
                   ${

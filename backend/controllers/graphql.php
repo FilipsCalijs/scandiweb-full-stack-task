@@ -138,6 +138,11 @@ class GraphQLSchema {
                     ],
                     'resolve' => function ($root, $args) {
                         $product = $this->product->getProductById($args['id']); 
+                        
+                        if (!$product) {
+                            throw new Exception('Product not found');
+                        }
+                        
                         return [
                             'id' => $product->getId(),
                             'name' => $product->getName(),

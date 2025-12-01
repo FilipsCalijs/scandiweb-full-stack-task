@@ -1,22 +1,49 @@
 import React from "react";
-import { useQuery } from "@apollo/client";
+import client from "../apolloClient";
 
-function withGraphQl(Component, query) {
-  return (props) => {
-    const variables = props.params?.id
-      ? { id: props.params.id }
-      : props.variables || {};
+export default function withGraphQl(Component, query, variables = {}) {
+  return class WithGraphQl extends React.Component {
+    state = {
+      loading: true,
+      error: null,
+      data: null,
+    };
 
-    const { loading, error, data } = useQuery(query, {
-      variables,
-      fetchPolicy: "no-cache",
-    });
+    async componentDidMount() {
+      try {
+        const { data } = await client.query({
+          query,
+          variables: this.props.variables || variables,
+          fetchPolicy: "no-cache",
+        });
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error.message}</p>;
+        this.setState({ data, loading: false });
+      } catch (error) {
+        this.setState({ error, loading: false });
+      }
+    }
 
-    return <Component {...props} data={data} />;
+    render() {
+      const { loading, error, data } = this.state;
+      const { ...props } = this.props;
+
+      if (loading) {
+        return (
+          <div className="flex justify-center items-center min-h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          </div>
+        );
+      }
+
+      if (error) {
+        return (
+          <div className="flex justify-center items-center min-h-screen text-red-500 text-xl">
+            Error: {error.message}
+          </div>
+        );
+      }
+
+      return <Component {...props} data={data} />;
+    }
   };
 }
-
-export default withGraphQl;
