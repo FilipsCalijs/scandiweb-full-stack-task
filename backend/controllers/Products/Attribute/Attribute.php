@@ -1,22 +1,22 @@
 <?php
-
 class Attribute {
-    public int $id;
-    public string $name;
-    public string $type;
-    public array $items = [];
+    private $db;
 
-    public function __construct(array $data) {
-        $this->id = $data['id'];
-        $this->name = $data['name'];
-        $this->type = $data['type'];
+    public function __construct(Database $db) {
+        $this->db = $db->getConnection();
     }
 
-    public function loadItems(PDO $db): void {
-        $stmt = $db->prepare("SELECT * FROM attribute_items WHERE attribute_id = :aid");
-        $stmt->bindParam(':aid', $this->id, PDO::PARAM_INT);
+    public function getAttributesForProduct($productId) {
+        $stmt = $this->db->prepare("SELECT * FROM attributes WHERE product_id = :product_id");
+        $stmt->bindParam(':product_id', $productId);
         $stmt->execute();
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $this->items = array_map(fn($row) => new AttributeItem($row), $rows);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAttributeItems($attributeId) {
+        $stmt = $this->db->prepare("SELECT * FROM attribute_items WHERE attribute_id = :attribute_id");
+        $stmt->bindParam(':attribute_id', $attributeId);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

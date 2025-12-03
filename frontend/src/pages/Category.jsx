@@ -33,7 +33,6 @@ const GET_PRODUCTS = gql`
 class Category extends React.Component {
   render() {
     const { data } = this.props;
-
     const category = data.productsByCategory[0]?.category || "Category";
 
     return (
@@ -60,20 +59,10 @@ class Category extends React.Component {
   }
 }
 
-const CategoryWithData = (props) => {
-  const currentPath = window.location.pathname;
-
-  const paths = [
-    { path: "/all", label: "ALL" },
-    { path: "/clothes", label: "CLOTHES" },
-    { path: "/tech", label: "TECH" },
-  ];
-
-  const category = paths.find((item) => item.path === currentPath)?.label;
-
-  const Wrapped = getProductsByCategory(Category, GET_PRODUCTS, category);
-
-  return <Wrapped {...props} />;
-};
-
-export default CategoryWithData;
+export default class CategoryWrapper extends React.Component {
+  render() {
+    const category = window.location.pathname.split("/")[1] || "all";
+    const Wrapped = getProductsByCategory(Category, GET_PRODUCTS, category);
+    return <Wrapped {...this.props} />;
+  }
+}
