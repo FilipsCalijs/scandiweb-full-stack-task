@@ -38,19 +38,17 @@ try {
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS product_gallery (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            product_id VARCHAR(255),
-            url TEXT NOT NULL,
-            FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+            product_id VARCHAR(50),
+            url TEXT NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ");
 
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS attributes (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            product_id VARCHAR(255),
+            product_id VARCHAR(50),
             name VARCHAR(255) NOT NULL,
-            type VARCHAR(50),
-            FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+            type VARCHAR(50)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ");
 
@@ -68,11 +66,34 @@ try {
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS prices (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            product_id VARCHAR(255),
+            product_id VARCHAR(50),
             amount DECIMAL(10,2),
             currency_label VARCHAR(10),
-            currency_symbol VARCHAR(5),
-            FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+            currency_symbol VARCHAR(5)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ");
+
+    // Orders table (single order per purchase)
+    $pdo->exec("        CREATE TABLE IF NOT EXISTS orders (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            total_amount DECIMAL(10,2) DEFAULT NULL,
+            status VARCHAR(50) DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ");
+
+    // Order items table (items belonging to an order)
+    $pdo->exec("        CREATE TABLE IF NOT EXISTS order_items (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            order_id INT NOT NULL,
+            product_id VARCHAR(50) DEFAULT NULL,
+            quantity INT DEFAULT 1,
+            size VARCHAR(255) DEFAULT NULL,
+            color VARCHAR(255) DEFAULT NULL,
+            capacity VARCHAR(255) DEFAULT NULL,
+            unit_price DECIMAL(10,2) DEFAULT NULL,
+            currency_label VARCHAR(10) DEFAULT NULL,
+            FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ");
 

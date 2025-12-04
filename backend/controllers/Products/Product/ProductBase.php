@@ -15,11 +15,14 @@ class ProductBase {
         $this->id = $data['id'];
         $this->name = $data['name'];
         $this->inStock = (bool) $data['inStock'];
-        $this->gallery = json_decode($data['gallery'], true);
+        $galleryRaw = $data['gallery'] ?? null;
+        $this->gallery = is_array($galleryRaw) ? $galleryRaw : json_decode($galleryRaw ?? '[]', true);
         $this->description = $data['description'];
         $this->category = $data['category'];
-        $this->attributes = json_decode($data['attributes'], true);
-        $this->prices = json_decode($data['prices'], true);
+        $attributesRaw = $data['attributes'] ?? null;
+        $this->attributes = is_array($attributesRaw) ? $attributesRaw : json_decode($attributesRaw ?? '[]', true);
+        $pricesRaw = $data['prices'] ?? null;
+        $this->prices = is_array($pricesRaw) ? $pricesRaw : json_decode($pricesRaw ?? '[]', true);
         $this->brand = $data['brand'];
     }
 
