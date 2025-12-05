@@ -29,8 +29,7 @@ try {
             brand VARCHAR(255),
             description TEXT,
             inStock BOOLEAN DEFAULT 1,
-            category_id INT,
-            FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
+            category VARCHAR(255)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ");
 

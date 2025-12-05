@@ -3,9 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ApolloProvider } from "@apollo/client";
 import client from "./apolloClient";
 
-import Home from "./Pages/Home";
-import Category from "./Pages/Category";
-import PageDetails from "./Pages/PageDetails";
+import Home from "./pages/Home";
+import Category from "./pages/Category";
+import PageDetails from "./pages/PageDetails";
 
 class App extends React.Component {
   render() {

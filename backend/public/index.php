@@ -27,6 +27,8 @@ require_once __DIR__ . '/../Controllers/Products/Category/ClothesCategory.php';
 require_once __DIR__ . '/../Controllers/Products/Category/TechCategory.php';
 require_once __DIR__ . '/../Controllers/Products/Category/CategoryFactory.php';
 
+require_once __DIR__ . '/../Controllers/Products/Attribute/ProductAttribute.php';
+
 require_once __DIR__ . '/../Controllers/Products/Product/ProductBase.php';
 require_once __DIR__ . '/../Controllers/Products/Product/Product.php';
 

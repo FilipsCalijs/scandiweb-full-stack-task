@@ -30,7 +30,10 @@ class Cart extends React.Component {
   handlePlaceOrder = async (client) => {
     const { cartItems } = this.state
     const cartTotal = getCartTotal()
-    if (!cartItems.length) return
+    
+    if (!cartItems.length) {
+      return
+    }
 
     const orders = cartItems.map((item) => ({
       id: item.id,
@@ -58,11 +61,13 @@ class Cart extends React.Component {
       if (data.placeOrder) {
         console.log("✅ Order successfully sent via GraphQL!")
         localStorage.removeItem("cartItems")
-        this.setState({ cartItemsCount: 0, cartItems: [] })
         
-       
-        this.props.toggleCart();
+        this.setState({ 
+          cartItemsCount: 0, 
+          cartItems: [] 
+        })
         
+        this.props.toggleCart()
       } else {
         console.error("❌ Server responded with false:", data)
       }
@@ -73,6 +78,7 @@ class Cart extends React.Component {
 
   checkCartOpen = () => {
     const isCartOpenFromStorage = JSON.parse(localStorage.getItem("isCartOpen")) || false
+    
     if (isCartOpenFromStorage && !this.props.isCartOpen) {
       this.props.toggleCart()
       localStorage.setItem("isCartOpen", JSON.stringify(false))
@@ -85,18 +91,30 @@ class Cart extends React.Component {
       const newItems = this.getCartItems()
       const currentItemsString = JSON.stringify(this.state.cartItems)
       const newItemsString = JSON.stringify(newItems)
-      if (
-        newCount !== this.state.cartItemsCount ||
-        currentItemsString !== newItemsString
-      ) {
-        this.setState({ cartItemsCount: newCount, cartItems: newItems })
+      
+      if (newCount !== this.state.cartItemsCount || currentItemsString !== newItemsString) {
+        this.setState({ 
+          cartItemsCount: newCount, 
+          cartItems: newItems 
+        })
       }
+      
       this.checkCartOpen()
     }, 500)
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.cartItemsCount !== this.state.cartItemsCount) {
+      this.setState({ cartItemsCount: this.getCartItemsCount() })
+    }
+    
+    const isCartOpen = this.checkCartOpen()
+    document.body.style.overflow = isCartOpen ? 'hidden' : 'auto'
+  }
+
   componentWillUnmount() {
     clearInterval(this.interval)
+    document.body.style.overflow = 'auto'
   }
 
   render() {
@@ -108,7 +126,7 @@ class Cart extends React.Component {
       <>
         {isCartOpen && (
           <div
-            className="fixed left-0 right-0 top-20 bottom-0 bg-[#39374838] z-40"
+            className="fixed inset-0 bg-[#39374838] z-40"
             onClick={toggleCart}
           ></div>
         )}
@@ -136,7 +154,8 @@ class Cart extends React.Component {
               className="absolute right-[-40px] top-[49px] w-[325px] bg-white z-[45] shadow-lg"
             >
               <div className="m-4">
-                <span className="font-bold">MyBag</span>, {cartItemsCount} {cartItemsCount === 1 ? "Item" : "Items"}
+                <span className="font-bold">MyBag</span>, {cartItemsCount}{" "}
+                {cartItemsCount === 1 ? "Item" : "Items"}
               </div>
 
               <DisplayItems cartItems={cartItems} />

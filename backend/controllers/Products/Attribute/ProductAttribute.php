@@ -1,5 +1,5 @@
 <?php
-class Attribute {
+class ProductAttribute {
     private $db;
 
     public function __construct(Database $db) {
