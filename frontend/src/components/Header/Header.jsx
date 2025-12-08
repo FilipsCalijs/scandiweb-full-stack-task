@@ -68,9 +68,12 @@ class Header extends React.Component {
 
   fetchCategories = async () => {
     try {
+      console.log('📡 Fetching categories from GraphQL...');
       const res = await client.query({ query: GET_CATEGORIES, fetchPolicy: "no-cache" });
+      console.log('✅ Categories fetched:', res.data.categories);
       this.setState({ categories: res.data.categories, loading: false });
     } catch (err) {
+      console.error('❌ Error fetching categories:', err);
       this.setState({ error: err, loading: false });
     }
   };
@@ -84,7 +87,7 @@ class Header extends React.Component {
     const currentPath = window.location.pathname.split("/")[1];
 
     return (
-      <header className="w-full h-20 flex items-center justify-between px-6 sm:px-12 bg-white relative z-[60] header">
+      <header className="w-full h-20 flex items-center justify-between px-6 sm:px-12 bg-white relative z-[1000] header">
 
         <div className="menu-btn-mobile flex items-center gap-4 md:hidden">
           <button onClick={this.toggleMenu} className="focus:outline-none menu-btn">

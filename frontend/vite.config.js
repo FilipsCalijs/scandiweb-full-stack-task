@@ -13,7 +13,7 @@ export default defineConfig({
         { from: /^\/tech/, to: '/index.html' },
         { from: /^\/clothes/, to: '/index.html' },
         { from: /^\/all/, to: '/index.html' },
-        { from: /./, to: '/index.html' } // любой другой маршрут
+        { from: /./, to: '/index.html' } 
       ]
     },
   }

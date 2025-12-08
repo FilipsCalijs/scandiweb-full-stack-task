@@ -9,8 +9,17 @@ import Color from "../components/Cart/Options/Colors";
 import Capacity from "../components/Cart/Options/Capacity";
 import { addToCart } from "../utils/utils";
 
+const isProduction = window.location.hostname !== 'localhost';
+
+const graphqlUri = isProduction 
+  ? 'https://tesk-task.xo.je/backend/public/graphql' 
+  : 'http://localhost:8000/graphql';
+
+console.log('🔗 PageDetails GraphQL URI:', graphqlUri);
+console.log('🌍 PageDetails Environment:', isProduction ? 'PRODUCTION' : 'LOCALHOST');
+
 const client = new ApolloClient({
-  uri: "http://localhost:8000/graphql",
+  uri: graphqlUri,
   cache: new InMemoryCache(),
 });
 

@@ -126,7 +126,7 @@ class Cart extends React.Component {
       <>
         {isCartOpen && (
           <div
-            className="fixed inset-0 bg-[#39374838] z-40"
+            className="fixed top-20 left-0 right-0 bottom-0 bg-[#39374838] z-40"
             onClick={toggleCart}
           ></div>
         )}

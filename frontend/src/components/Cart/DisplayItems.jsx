@@ -25,17 +25,17 @@ class DisplayItems extends React.Component {
             
               <Size
                 sizes={item}
-                readOnly={true}
+                disabled={true}
                 onSizeChange={() => {}}
               />
               <Color
                 colors={item}
-                readOnly={true}
+                disabled={true}
                 onColorChange={() => {}}
               />
               <Capacity
                 capacities={item}
-                readOnly={true}
+                disabled={true}
                 onCapacityChange={() => {}}
               />
             </div>
