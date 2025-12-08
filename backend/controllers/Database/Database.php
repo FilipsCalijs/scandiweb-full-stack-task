@@ -13,14 +13,15 @@ class Database extends AbstractDatabase {
         $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
         $dotenv->load();
 
-        $this->host = $_ENV["db_host"];
-        $this->dbname = $_ENV["db_name"];
-        $this->username = $_ENV["db_username"];
-        $this->password = $_ENV["db_password"];
+        $this->host = $_ENV["DB_HOST"] ?? $_ENV["db_host"];
+        $this->dbname = $_ENV["DB_NAME"] ?? $_ENV["db_name"];
+        $this->username = $_ENV["DB_USER"] ?? $_ENV["db_username"];
+        $this->password = $_ENV["DB_PASS"] ?? $_ENV["db_password"];
+        $port = $_ENV["DB_PORT"] ?? 3306;
 
         try {
             $this->pdo = new PDO(
-                "mysql:host={$this->host};dbname={$this->dbname}",
+                "mysql:host={$this->host};dbname={$this->dbname};port={$port}",
                 $this->username,
                 $this->password
             );

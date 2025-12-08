@@ -1,6 +1,18 @@
 <?php
 error_reporting(E_ALL);
-header("Access-Control-Allow-Origin: http://localhost:5173");
+
+// Dynamic CORS origin
+$allowedOrigins = [
+    'http://localhost:5173',
+    'https://tesk-task.xo.je'
+];
+
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+if (in_array($origin, $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: $origin");
+}
+
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Credentials: true");
