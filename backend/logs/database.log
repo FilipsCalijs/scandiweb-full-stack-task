@@ -1,0 +1,45 @@
+[2025-12-10 14:51:43] ENV CHECK: path=/Users/filips.calijs/Desktop/Programming/scandiweb-full-stack-task/backend/controllers/Database/../../.env, exists=YES
+[2025-12-10 14:51:43] ENV LOADED
+[2025-12-10 14:51:43] DB CREDS: host=sql100.infinityfree.com, db=if0_40454816_react_ecommerce, user=if0_40454816, pass_len=15
+[2025-12-10 14:51:43] PDO: Attempting connection...
+[2025-12-10 14:51:46] PDO ERROR: SQLSTATE[HY000] [2002] php_network_getaddresses: getaddrinfo for sql100.infinityfree.com failed: nodename nor servname provided, or not known
+[2025-12-10 14:51:46] ENV CHECK: path=/Users/filips.calijs/Desktop/Programming/scandiweb-full-stack-task/backend/controllers/Database/../../.env, exists=YES
+[2025-12-10 14:51:46] ENV LOADED
+[2025-12-10 14:51:46] DB CREDS: host=sql100.infinityfree.com, db=if0_40454816_react_ecommerce, user=if0_40454816, pass_len=15
+[2025-12-10 14:51:46] PDO: Attempting connection...
+[2025-12-10 14:51:46] PDO ERROR: SQLSTATE[HY000] [2002] php_network_getaddresses: getaddrinfo for sql100.infinityfree.com failed: nodename nor servname provided, or not known
+[2025-12-10 14:52:07] ENV CHECK: path=/Users/filips.calijs/Desktop/Programming/scandiweb-full-stack-task/backend/controllers/Database/../../.env, exists=YES
+[2025-12-10 14:52:07] ENV LOADED
+[2025-12-10 14:52:07] DB CREDS: host=sql100.infinityfree.com, db=if0_40454816_react_ecommerce, user=if0_40454816, pass_len=15
+[2025-12-10 14:52:07] PDO: Attempting connection...
+[2025-12-10 14:52:07] PDO ERROR: SQLSTATE[HY000] [2002] php_network_getaddresses: getaddrinfo for sql100.infinityfree.com failed: nodename nor servname provided, or not known
+[2025-12-10 14:52:07] ENV CHECK: path=/Users/filips.calijs/Desktop/Programming/scandiweb-full-stack-task/backend/controllers/Database/../../.env, exists=YES
+[2025-12-10 14:52:07] ENV LOADED
+[2025-12-10 14:52:07] DB CREDS: host=sql100.infinityfree.com, db=if0_40454816_react_ecommerce, user=if0_40454816, pass_len=15
+[2025-12-10 14:52:07] PDO: Attempting connection...
+[2025-12-10 14:52:07] PDO ERROR: SQLSTATE[HY000] [2002] php_network_getaddresses: getaddrinfo for sql100.infinityfree.com failed: nodename nor servname provided, or not known
+[2025-12-10 14:52:48] ENV CHECK: path=/Users/filips.calijs/Desktop/Programming/scandiweb-full-stack-task/backend/controllers/Database/../../.env, exists=YES
+[2025-12-10 14:52:48] ENV LOADED
+[2025-12-10 14:52:48] DB CREDS: host=sql100.infinityfree.com, db=if0_40454816_react_ecommerce, user=if0_40454816, pass_len=15
+[2025-12-10 14:52:48] PDO: Attempting connection...
+[2025-12-10 14:52:48] PDO ERROR: SQLSTATE[HY000] [2002] php_network_getaddresses: getaddrinfo for sql100.infinityfree.com failed: nodename nor servname provided, or not known
+[2025-12-10 14:52:48] ENV CHECK: path=/Users/filips.calijs/Desktop/Programming/scandiweb-full-stack-task/backend/controllers/Database/../../.env, exists=YES
+[2025-12-10 14:52:48] ENV LOADED
+[2025-12-10 14:52:48] DB CREDS: host=sql100.infinityfree.com, db=if0_40454816_react_ecommerce, user=if0_40454816, pass_len=15
+[2025-12-10 14:52:48] PDO: Attempting connection...
+[2025-12-10 14:52:48] PDO ERROR: SQLSTATE[HY000] [2002] php_network_getaddresses: getaddrinfo for sql100.infinityfree.com failed: nodename nor servname provided, or not known
+[2025-12-10 14:52:49] ENV CHECK: path=/Users/filips.calijs/Desktop/Programming/scandiweb-full-stack-task/backend/controllers/Database/../../.env, exists=YES
+[2025-12-10 14:52:49] ENV LOADED
+[2025-12-10 14:52:49] DB CREDS: host=sql100.infinityfree.com, db=if0_40454816_react_ecommerce, user=if0_40454816, pass_len=15
+[2025-12-10 14:52:49] PDO: Attempting connection...
+[2025-12-10 14:52:49] PDO ERROR: SQLSTATE[HY000] [2002] php_network_getaddresses: getaddrinfo for sql100.infinityfree.com failed: nodename nor servname provided, or not known
+[2025-12-10 14:55:14] ENV CHECK: path=/Users/filips.calijs/Desktop/Programming/scandiweb-full-stack-task/backend/controllers/Database/../../.env, exists=YES
+[2025-12-10 14:55:14] ENV LOADED
+[2025-12-10 14:55:14] DB CREDS: host=sql100.infinityfree.com, db=if0_40454816_react_ecommerce, user=if0_40454816, pass_len=15
+[2025-12-10 14:55:14] PDO: Attempting connection...
+[2025-12-10 14:55:14] PDO ERROR: SQLSTATE[HY000] [2002] php_network_getaddresses: getaddrinfo for sql100.infinityfree.com failed: nodename nor servname provided, or not known
+[2025-12-10 14:55:14] ENV CHECK: path=/Users/filips.calijs/Desktop/Programming/scandiweb-full-stack-task/backend/controllers/Database/../../.env, exists=YES
+[2025-12-10 14:55:14] ENV LOADED
+[2025-12-10 14:55:14] DB CREDS: host=sql100.infinityfree.com, db=if0_40454816_react_ecommerce, user=if0_40454816, pass_len=15
+[2025-12-10 14:55:14] PDO: Attempting connection...
+[2025-12-10 14:55:14] PDO ERROR: SQLSTATE[HY000] [2002] php_network_getaddresses: getaddrinfo for sql100.infinityfree.com failed: nodename nor servname provided, or not known

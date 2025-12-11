@@ -18,7 +18,7 @@ class Header extends React.Component {
     this.state = {
       isCartOpen: false,
       isMenuOpen: false,
-      categories: [], // динамические категории
+      categories: [], 
       loading: true,
       error: null,
     };

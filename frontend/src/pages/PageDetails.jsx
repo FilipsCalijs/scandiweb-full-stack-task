@@ -7,13 +7,14 @@ import Gallery from "../components/Gallery";
 import Size from "../components/Cart/Options/Size";
 import Color from "../components/Cart/Options/Colors";
 import Capacity from "../components/Cart/Options/Capacity";
+import TextAttribute from "../components/Cart/Options/TextAttribute";
 import { addToCart } from "../utils/utils";
 
 const isProduction = window.location.hostname !== 'localhost';
 
 const graphqlUri = isProduction 
-  ? 'https://tesk-task.xo.je/backend/public/graphql' 
-  : 'http://localhost:8000/graphql';
+  ? 'https://tesk-task.xo.je/backend/public//index.php' 
+  : 'http://localhost:8000/index.php';
 
 console.log('🔗 PageDetails GraphQL URI:', graphqlUri);
 console.log('🌍 PageDetails Environment:', isProduction ? 'PRODUCTION' : 'LOCALHOST');
@@ -63,6 +64,7 @@ class PageDetails extends React.Component {
       selectedSize: "",
       selectedColor: "",
       selectedCapacity: "",
+      selectedOtherAttributes: {},
       loading: true,
       error: null,
     };
@@ -77,6 +79,16 @@ class PageDetails extends React.Component {
         query: GET_PRODUCT,
         variables: { id: productId },
         fetchPolicy: "no-cache",
+      });
+
+      console.log('📦 Product loaded:', data.product.name);
+      console.log('🎨 All attributes:', data.product.attributes);
+      
+      data.product.attributes.forEach(attr => {
+        console.log(`\n${attr.name} (${attr.type}):`);
+        attr.items.forEach(item => {
+          console.log(`  - ${item.displayValue}: ${item.value}`);
+        });
       });
 
       this.setState({
@@ -101,12 +113,31 @@ class PageDetails extends React.Component {
     this.setState({ selectedCapacity: value });
   };
 
-  handleAddToCart = () => {
-    const { product, selectedSize, selectedColor, selectedCapacity } = this.state;
+  handleOtherAttributeChange = (attributeId, value) => {
+    this.setState(prevState => ({
+      selectedOtherAttributes: {
+        ...prevState.selectedOtherAttributes,
+        [attributeId]: value
+      }
+    }));
+  };
 
-    const findAttribute = (attributes, attributeId) => {
-      return attributes.find((attr) => attr.id === attributeId)?.items || [];
-    };
+  handleAddToCart = () => {
+    const { product, selectedSize, selectedColor, selectedCapacity, selectedOtherAttributes } = this.state;
+
+    const sizeAttr = product.attributes.find(a => a.name.toLowerCase().includes('size'));
+    const colorAttr = product.attributes.find(a => a.name.toLowerCase().includes('color'));
+    const capacityAttr = product.attributes.find(a => a.name.toLowerCase().includes('capacity'));
+    
+    const otherAttributes = product.attributes.filter(a => {
+      const name = a.name.toLowerCase();
+      return !name.includes('size') && !name.includes('color') && !name.includes('capacity');
+    });
+
+    const otherAttributesWithValues = otherAttributes.map(attr => ({
+      ...attr,
+      selectedValue: selectedOtherAttributes[attr.id] || ""
+    }));
 
     const item = {
       id: product.id,
@@ -115,12 +146,13 @@ class PageDetails extends React.Component {
       quantity: 1,
       price: Number(product.prices[0].amount.toFixed(2)),
       currencySymbol: product.prices[0].currency.symbol,
-      availableSizes: findAttribute(product.attributes, "Size"),
-      availableColors: findAttribute(product.attributes, "Color"),
-      availableCapacities: findAttribute(product.attributes, "Capacity"),
+      availableSizes: sizeAttr?.items || [],
+      availableColors: colorAttr?.items || [],
+      availableCapacities: capacityAttr?.items || [],
       size: selectedSize,
       color: selectedColor,
       capacity: selectedCapacity,
+      otherAttributes: otherAttributesWithValues,
     };
 
     addToCart(item);
@@ -186,44 +218,63 @@ class PageDetails extends React.Component {
           <div className="lg:ml-[200px]">
             <p className="font-semibold text-3xl">{product.name}</p>
 
-            {hasSize && (
-              <div data-testid="product-attribute-size">
-                <Size
-                  sizes={{
-                    availableSizes:
-                      product.attributes.find((a) => a.id === "Size")?.items || [],
-                    size: selectedSize,
-                  }}
-                  onSizeChange={this.handleSizeChange}
-                />
-              </div>
-            )}
-
-            {hasColor && (
-              <div data-testid="product-attribute-color">
-                <Color
-                  colors={{
-                    availableColors:
-                      product.attributes.find((a) => a.id === "Color")?.items || [],
-                    color: selectedColor,
-                  }}
-                  onColorChange={this.handleColorChange}
-                />
-              </div>
-            )}
-
-            {hasCapacity && (
-              <div data-testid="product-attribute-capacity">
-                <Capacity
-                  capacities={{
-                    availableCapacities:
-                      product.attributes.find((a) => a.id === "Capacity")?.items || [],
-                    capacity: selectedCapacity,
-                  }}
-                  onCapacityChange={this.handleCapacityChange}
-                />
-              </div>
-            )}
+            {product.attributes.map((attr) => {
+              const attrNameLower = attr.name.toLowerCase();
+              
+              if (attrNameLower.includes('size')) {
+                return (
+                  <div key={attr.id} data-testid={`product-attribute-${attr.id}`}>
+                    <Size
+                      sizes={{
+                        availableSizes: attr.items,
+                        size: selectedSize,
+                      }}
+                      onSizeChange={this.handleSizeChange}
+                    />
+                  </div>
+                );
+              }
+              
+              if (attrNameLower.includes('color')) {
+                return (
+                  <div key={attr.id} data-testid={`product-attribute-${attr.id}`}>
+                    <Color
+                      colors={{
+                        availableColors: attr.items,
+                        color: selectedColor,
+                      }}
+                      onColorChange={this.handleColorChange}
+                    />
+                  </div>
+                );
+              }
+              
+              if (attrNameLower.includes('capacity')) {
+                return (
+                  <div key={attr.id} data-testid={`product-attribute-${attr.id}`}>
+                    <Capacity
+                      capacities={{
+                        availableCapacities: attr.items,
+                        capacity: selectedCapacity,
+                      }}
+                      onCapacityChange={this.handleCapacityChange}
+                    />
+                  </div>
+                );
+              }
+              
+           
+              return (
+                <div key={attr.id} data-testid={`product-attribute-${attr.id}`}>
+                  <TextAttribute
+                    attribute={attr}
+                    selectedValue={this.state.selectedOtherAttributes[attr.id] || ""}
+                    onValueChange={(value) => this.handleOtherAttributeChange(attr.id, value)}
+                    disabled={false}
+                  />
+                </div>
+              );
+            })}
 
             <p className="uppercase mt-4 text-lg font-bold">Price:</p>
             <p className="uppercase mt-4 text-2xl font-bold">

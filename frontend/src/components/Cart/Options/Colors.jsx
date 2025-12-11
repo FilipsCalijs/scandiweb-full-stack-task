@@ -5,7 +5,8 @@ class Color extends React.Component {
     const { colors, onColorChange, disabled } = this.props;
 
     const availableColors = colors?.availableColors || [];
-    const selectedColor = colors?.color || "";
+    // Если цвет не выбран, используем первый элемент как значение по умолчанию
+    const selectedColor = colors?.color || (availableColors[0]?.value || "");
     const attributeName = "color";
 
     if (!availableColors.length) {
@@ -33,11 +34,12 @@ class Color extends React.Component {
                 className={`relative h-8 w-8 transition-all duration-150
                   ${
                     disabled
-                      ? "opacity-40 pointer-events-none cursor-default"
+                      ? "pointer-events-none cursor-default"
                       : isSelected
                       ? "border-[2px] border-[#5ECE7B] p-[2px] cursor-pointer"
                       : "border-[2px] border-transparent hover:border-gray-400 cursor-pointer"
                   }
+                  ${isSelected ? "border-[2px] border-[#5ECE7B] p-[2px]" : "border-[2px] border-transparent"}
                 `}
               >
                 <div

@@ -3,61 +3,74 @@ import { addToCart } from "../utils/utils";
 
 class Card extends React.Component {
   handleCartClick = () => {
-    const { data } = this.props;
-    const { attributes, prices, gallery, name, id } = data;
+  const { data } = this.props;
+  const { attributes, prices, gallery, name, id } = data;
 
-    const priceData = prices?.[0] || {};
-    const currencySymbol = priceData.currency?.symbol || "$";
+  const priceData = prices?.[0] || {};
+  const currencySymbol = priceData.currency?.symbol || "$";
 
-    const baseItem = {
-      id,
-      name,
-      img: gallery?.[0],
-      price: priceData.amount,
-      quantity: 1,
-      currencySymbol,
-    };
+  const baseItem = {
+    id,
+    name,
+    img: gallery?.[0],
+    price: priceData.amount,
+    quantity: 1,
+    currencySymbol,
+  };
 
-    if (!Array.isArray(attributes) || attributes.length === 0) {
-      addToCart(baseItem);
+  if (!Array.isArray(attributes) || attributes.length === 0) {
+    addToCart(baseItem);
+    return;
+  }
+
+  const productForCart = {
+    ...baseItem,
+    size: "",
+    color: "",
+    capacity: "",
+    availableSizes: [],
+    availableColors: [],
+    availableCapacities: [],
+    otherAttributes: [],
+  };
+
+  attributes.forEach((attr) => {
+    if (!attr || !attr.items || attr.items.length === 0) return;
+
+    const attrName = attr.name || "";
+    const attrNameLower = attrName.toLowerCase();
+
+    const firstItem = attr.items[0];
+
+    if (attrNameLower.includes("size")) {
+      productForCart.size = firstItem.value;
+      productForCart.availableSizes = attr.items;
       return;
     }
 
-    const getOptions = (attrId) => {
-      const attr = attributes.find((a) => a.id === attrId);
-      if (Array.isArray(attr?.items)) {
-        return attr.items;
-      } else {
-        return [];
-      }
-    };
-
-    const [size] = getOptions("Size");
-    const [color] = getOptions("Color");
-    const [capacity] = getOptions("Capacity");
-
-    const productForCart = {
-      ...baseItem,
-    };
-
-    if (size) {
-      productForCart.size = size.value;
+    if (attrNameLower.includes("color")) {
+      productForCart.color = firstItem.value;
+      productForCart.availableColors = attr.items;
+      return;
     }
 
-    if (color) {
-      productForCart.color = color.value;
+    if (attrNameLower.includes("capacity")) {
+      productForCart.capacity = firstItem.displayValue || firstItem.value;
+      productForCart.availableCapacities = attr.items;
+      return;
     }
 
-    if (capacity) {
-      productForCart.capacity = capacity.displayValue;
-    }
+    productForCart.otherAttributes.push({
+      id: attr.id,
+      name: attr.name,
+      selectedValue: firstItem.value,
+      items: attr.items,
+    });
+  });
 
-    productForCart.availableSizes = getOptions("Size");
-    productForCart.availableColors = getOptions("Color");
-    productForCart.availableCapacities = getOptions("Capacity");
+  addToCart(productForCart);
+};
 
-    addToCart(productForCart);
-  };
 
   render() {
     const { data } = this.props;
@@ -70,10 +83,7 @@ class Card extends React.Component {
         className="relative flex flex-col justify-center items-center group w-[386px] h-[444px] customShadow"
         data-testid={`product-${name.toLowerCase().replace(/\s+/g, "-")}`}
       >
-
-        {isOut && (
-          <div className="out-of-stock-label">OUT OF STOCK</div>
-        )}
+        {isOut && <div className="out-of-stock-label">OUT OF STOCK</div>}
 
         {!isOut && (
           <button
@@ -102,7 +112,6 @@ class Card extends React.Component {
             {prices?.[0]?.amount.toFixed(2)}
           </p>
         </div>
-
       </div>
     );
   }

@@ -35,13 +35,31 @@ class Cart extends React.Component {
       return
     }
 
-    const orders = cartItems.map((item) => ({
-      id: item.id,
-      quantity: item.quantity,
-      size: item.size || "",
-      color: item.color || "",
-      capacity: item.capacity || "",
-    }))
+    const orders = cartItems.map((item) => {
+      
+      let otherAttributesJson = null;
+      if (item.otherAttributes && item.otherAttributes.length > 0) {
+        const selectedAttrs = item.otherAttributes
+          .filter(attr => attr.selectedValue)
+          .map(attr => ({
+            name: attr.name,
+            value: attr.selectedValue
+          }));
+        
+        if (selectedAttrs.length > 0) {
+          otherAttributesJson = JSON.stringify(selectedAttrs);
+        }
+      }
+
+      return {
+        id: item.id,
+        quantity: item.quantity,
+        size: item.size || "",
+        color: item.color || "",
+        capacity: item.capacity || "",
+        otherAttributes: otherAttributesJson,
+      };
+    })
 
     const orderData = {
       orderId: `order-${Date.now()}`,
@@ -108,8 +126,7 @@ class Cart extends React.Component {
       this.setState({ cartItemsCount: this.getCartItemsCount() })
     }
     
-    const isCartOpen = this.checkCartOpen()
-    document.body.style.overflow = isCartOpen ? 'hidden' : 'auto'
+    document.body.style.overflow = this.props.isCartOpen ? 'hidden' : 'auto'
   }
 
   componentWillUnmount() {
