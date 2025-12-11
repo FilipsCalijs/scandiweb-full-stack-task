@@ -1,3 +1,14 @@
+function compareOtherAttributes(attrs1, attrs2) {
+  if (!attrs1 && !attrs2) return true;
+  if (!attrs1 || !attrs2) return false;
+  if (attrs1.length !== attrs2.length) return false;
+  
+  return attrs1.every((attr1, index) => {
+    const attr2 = attrs2[index];
+    return attr1.id === attr2.id && attr1.selectedValue === attr2.selectedValue;
+  });
+}
+
 function addToCart(product) {
   const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
 
@@ -6,7 +17,8 @@ function addToCart(product) {
       item.id === product.id &&
       item.size === product.size &&
       item.color === product.color &&
-      item.capacity === product.capacity
+      item.capacity === product.capacity &&
+      compareOtherAttributes(item.otherAttributes, product.otherAttributes)
     );
   });
 
@@ -33,7 +45,8 @@ function cleanCartDuplicates() {
       a.id === b.id &&
       (a.size || "") === (b.size || "") &&
       (a.color || "") === (b.color || "") &&
-      (a.capacity || "") === (b.capacity || "")
+      (a.capacity || "") === (b.capacity || "") &&
+      compareOtherAttributes(a.otherAttributes, b.otherAttributes)
     );
   };
 

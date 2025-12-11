@@ -10,6 +10,7 @@ import PageDetails from "./pages/PageDetails";
 class App extends React.Component {
   render() {
     return (
+
       <ApolloProvider client={client}>
         <Router>
           <Routes>

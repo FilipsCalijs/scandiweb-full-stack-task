@@ -72,13 +72,11 @@ class DisplayItems extends React.Component {
   }
   
   render() {
-    console.log('🛒 Cart Items:', this.props.cartItems);
     
     return (
       <div className="m-4 mt-8 max-h-[500px] space-y-10 no-scrollbar overflow-y-auto">
         {this.props.cartItems.map((item) => {
-          console.log('📦 Item:', item.name, 'otherAttributes:', item.otherAttributes);
-          
+       
           return (
           <div
             key={item.itemID}
@@ -120,7 +118,7 @@ class DisplayItems extends React.Component {
                 if (!attr.selectedValue) return null;
                 
                 return (
-                  <div key={attr.name}>
+                  <div key={attr.id}>
                     <p className="text-[14px] font-semibold text-[#1D1F22] mb-1 mt-2">{attr.name}:</p>
                     <div className="flex flex-wrap gap-1">
                       {attr.items.map((attrItem) => {
@@ -133,7 +131,7 @@ class DisplayItems extends React.Component {
                               ${isSelected ? "bg-[#1D1F22] text-white" : "bg-white text-[#1D1F22] border-black"}
                             `}
                           >
-                            {attrItem.displayValue}
+                            {attrItem.value}
                           </div>
                         );
                       })}

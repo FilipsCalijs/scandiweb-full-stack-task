@@ -5,7 +5,7 @@ class Color extends React.Component {
     const { colors, onColorChange, disabled } = this.props;
 
     const availableColors = colors?.availableColors || [];
-    // Если цвет не выбран, используем первый элемент как значение по умолчанию
+    
     const selectedColor = colors?.color || (availableColors[0]?.value || "");
     const attributeName = "color";
 

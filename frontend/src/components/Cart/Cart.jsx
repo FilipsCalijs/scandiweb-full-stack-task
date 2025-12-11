@@ -36,13 +36,12 @@ class Cart extends React.Component {
     }
 
     const orders = cartItems.map((item) => {
-      
       let otherAttributesJson = null;
       if (item.otherAttributes && item.otherAttributes.length > 0) {
         const selectedAttrs = item.otherAttributes
           .filter(attr => attr.selectedValue)
           .map(attr => ({
-            name: attr.name,
+            name: attr.name || '',
             value: attr.selectedValue
           }));
         
@@ -54,9 +53,9 @@ class Cart extends React.Component {
       return {
         id: item.id,
         quantity: item.quantity,
-        size: item.size || "",
-        color: item.color || "",
-        capacity: item.capacity || "",
+        size: item.size || (item.availableSizes && item.availableSizes.length > 0 ? item.availableSizes[0].value : ""),
+        color: item.color || (item.availableColors && item.availableColors.length > 0 ? item.availableColors[0].value : ""),
+        capacity: item.capacity || (item.availableCapacities && item.availableCapacities.length > 0 ? item.availableCapacities[0].value : ""),
         otherAttributes: otherAttributesJson,
       };
     })
@@ -68,7 +67,7 @@ class Cart extends React.Component {
       createdAt: new Date().toISOString(),
     }
 
-    console.log("🛒 Sending order via GraphQL:", orderData)
+    console.log("🛒 Sending order via GraphQL (I know there shouldn't be any console logs in production, but I left this on purpose for you, my dear developer ;) ):", orderData)
 
     try {
       const { data } = await client.mutate({

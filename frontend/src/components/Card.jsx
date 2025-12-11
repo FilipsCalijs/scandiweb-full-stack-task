@@ -3,74 +3,88 @@ import { addToCart } from "../utils/utils";
 
 class Card extends React.Component {
   handleCartClick = () => {
-  const { data } = this.props;
-  const { attributes, prices, gallery, name, id } = data;
+    const { data } = this.props;
+    const { attributes, prices, gallery, name, id, category } = data;
 
-  const priceData = prices?.[0] || {};
-  const currencySymbol = priceData.currency?.symbol || "$";
+    const priceData = prices?.[0] || {};
+    const currencySymbol = priceData.currency?.symbol || "$";
 
-  const baseItem = {
-    id,
-    name,
-    img: gallery?.[0],
-    price: priceData.amount,
-    quantity: 1,
-    currencySymbol,
-  };
+    const baseItem = {
+      id,
+      name,
+      img: gallery?.[0],
+      price: Number(priceData.amount.toFixed(2)),
+      quantity: 1,
+      currencySymbol,
+    };
 
-  if (!Array.isArray(attributes) || attributes.length === 0) {
-    addToCart(baseItem);
-    return;
-  }
-
-  const productForCart = {
-    ...baseItem,
-    size: "",
-    color: "",
-    capacity: "",
-    availableSizes: [],
-    availableColors: [],
-    availableCapacities: [],
-    otherAttributes: [],
-  };
-
-  attributes.forEach((attr) => {
-    if (!attr || !attr.items || attr.items.length === 0) return;
-
-    const attrName = attr.name || "";
-    const attrNameLower = attrName.toLowerCase();
-
-    const firstItem = attr.items[0];
-
-    if (attrNameLower.includes("size")) {
-      productForCart.size = firstItem.value;
-      productForCart.availableSizes = attr.items;
+    if (!Array.isArray(attributes) || attributes.length === 0) {
+      addToCart(baseItem);
       return;
     }
 
-    if (attrNameLower.includes("color")) {
-      productForCart.color = firstItem.value;
-      productForCart.availableColors = attr.items;
-      return;
-    }
+  
+    let sizeAttr = null;
+    let colorAttr = null;
+    let capacityAttr = null;
+    let otherAttributesList = [];
 
-    if (attrNameLower.includes("capacity")) {
-      productForCart.capacity = firstItem.displayValue || firstItem.value;
-      productForCart.availableCapacities = attr.items;
-      return;
-    }
+   
+    attributes.forEach((attr) => {
+        if (!attr || !attr.items || attr.items.length === 0) return;
 
-    productForCart.otherAttributes.push({
-      id: attr.id,
-      name: attr.name,
-      selectedValue: firstItem.value,
-      items: attr.items,
+        const attrNameLower = String(attr.name || "").toLowerCase();
+        const attrIdLower = String(attr.id || "").toLowerCase();
+        
+        if (attrNameLower.includes("size") || attrIdLower === "size") {
+            sizeAttr = attr;
+            return;
+        }
+
+        if (attrNameLower.includes("color") || attrIdLower === "color") {
+            colorAttr = attr;
+            return;
+        }
+
+        if (attrNameLower.includes("capacity") || attrIdLower === "capacity") {
+            capacityAttr = attr;
+            return;
+        }
+
+        otherAttributesList.push({
+            id: attr.id,
+            name: attr.name,
+            type: attr.type,
+            items: attr.items,
+            selectedValue: attr.items[0].value, 
+        });
     });
-  });
 
-  addToCart(productForCart);
-};
+   
+    const productForCart = {
+        ...baseItem,
+        category: category || "",
+        
+      
+        size: sizeAttr ? sizeAttr.items[0].value : "",
+        color: colorAttr ? colorAttr.items[0].value : "",
+        capacity: capacityAttr ? (capacityAttr.items[0].value) : "",
 
+        
+        availableSizes: sizeAttr?.items || [],
+        availableColors: colorAttr?.items || [],
+        availableCapacities: capacityAttr?.items || [],
+        
+        
+        sizeAttributeName: sizeAttr?.name || "", 
+        colorAttributeName: colorAttr?.name || "",
+        capacityAttributeName: capacityAttr?.name || "",
+        
+        otherAttributes: otherAttributesList,
+    };
+
+    addToCart(productForCart);
+  };
 
   render() {
     const { data } = this.props;

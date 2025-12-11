@@ -68,9 +68,9 @@ class Header extends React.Component {
 
   fetchCategories = async () => {
     try {
-      console.log('📡 Fetching categories from GraphQL...');
+    
       const res = await client.query({ query: GET_CATEGORIES, fetchPolicy: "no-cache" });
-      console.log('✅ Categories fetched:', res.data.categories);
+    
       this.setState({ categories: res.data.categories, loading: false });
     } catch (err) {
       console.error('❌ Error fetching categories:', err);

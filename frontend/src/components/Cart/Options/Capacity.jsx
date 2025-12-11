@@ -13,8 +13,8 @@ class Capacity extends React.Component {
     const { capacities, disabled } = this.props
 
     const availableCapacities = capacities?.availableCapacities || []
-    // Если capacity не выбран, используем первый элемент как значение по умолчанию
-    const selectedCapacity = capacities?.capacity || (availableCapacities[0]?.displayValue || availableCapacities[0]?.value || "")
+   
+    const selectedCapacity = capacities?.capacity || (availableCapacities[0]?.value || "")
 
     if (!availableCapacities.length) {
       return null
@@ -26,14 +26,14 @@ class Capacity extends React.Component {
 
         <div className="flex flex-wrap gap-3">
           {availableCapacities.map((option) => {
-            const isSelected = selectedCapacity === option.displayValue
+            const isSelected = selectedCapacity === option.value
             const optionId = option.id || option.value
 
             return (
               <div
-                key={option.displayValue}
+                key={option.value}
                 data-testid={`product-attribute-capacity-${optionId}`}
-                onClick={!disabled ? () => this.handleClick(option.displayValue) : undefined}
+                onClick={!disabled ? () => this.handleClick(option.value) : undefined}
                 className={`
                   min-w-[60px] h-8 px-2 flex items-center justify-center border-2 rounded-sm text-sm font-medium
                   ${disabled
@@ -45,7 +45,7 @@ class Capacity extends React.Component {
                   ${isSelected ? "bg-[#1D1F22] text-white" : "bg-white text-[#1D1F22] border-black"}
                 `}
               >
-                {option.displayValue}
+                {option.value}
               </div>
             )
           })}

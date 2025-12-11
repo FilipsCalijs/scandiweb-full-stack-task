@@ -9,22 +9,6 @@ export default function withGraphQl(Component, query, variables = {}) {
       data: null,
     };
 
-    async componentDidMount() {
-      try {
-        console.log('📡 withGraphQL: Fetching data...', { query: query.loc.source.body.substring(0, 50) + '...', variables: this.props.variables || variables });
-        const { data } = await client.query({
-          query,
-          variables: this.props.variables || variables,
-          fetchPolicy: "no-cache",
-        });
-        console.log('✅ withGraphQL: Data fetched successfully', data);
-        this.setState({ data, loading: false });
-      } catch (error) {
-        console.error('❌ withGraphQL: Error fetching data', error);
-        this.setState({ error, loading: false });
-      }
-    }
-
     render() {
       const { loading, error, data } = this.state;
       const { ...props } = this.props;

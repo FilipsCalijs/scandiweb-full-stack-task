@@ -36,7 +36,7 @@ class TextAttribute extends React.Component {
                   ${isSelected ? "bg-[#1D1F22] text-white" : "bg-white text-[#1D1F22] border-black"}
                 `}
               >
-                {item.displayValue}
+                {item.value}
               </div>
             );
           })}

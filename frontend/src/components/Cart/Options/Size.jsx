@@ -12,9 +12,6 @@ class Size extends React.Component {
       return null;
     }
 
-    
-    const displaySelectedSize = selectedSize || availableSizes[0]?.value || "";
-
     return (
       <>
         <p className="text-[16px] font-semibold text-[#1D1F22] mb-2">Size:</p>
@@ -24,7 +21,7 @@ class Size extends React.Component {
           className="flex flex-wrap gap-2"
         >
           {availableSizes.map((sizeOption) => {
-            const isSelected = displaySelectedSize === sizeOption.value;
+            const isSelected = selectedSize === sizeOption.value;
             const optionId = sizeOption.id || sizeOption.value;
             const optionKebab = sizeOption.value.toLowerCase().replace(/\s+/g, "-");
 

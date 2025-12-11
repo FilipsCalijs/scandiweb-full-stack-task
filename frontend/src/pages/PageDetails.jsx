@@ -16,8 +16,6 @@ const graphqlUri = isProduction
   ? 'https://tesk-task.xo.je/backend/public//index.php' 
   : 'http://localhost:8000/index.php';
 
-console.log('🔗 PageDetails GraphQL URI:', graphqlUri);
-console.log('🌍 PageDetails Environment:', isProduction ? 'PRODUCTION' : 'LOCALHOST');
 
 const client = new ApolloClient({
   uri: graphqlUri,
@@ -81,19 +79,41 @@ class PageDetails extends React.Component {
         fetchPolicy: "no-cache",
       });
 
-      console.log('📦 Product loaded:', data.product.name);
-      console.log('🎨 All attributes:', data.product.attributes);
+     
+      
+
+      // Initialize default values for all attributes
+      const initialOtherAttributes = {};
+      let initialSize = "";
+      let initialColor = "";
+      let initialCapacity = "";
       
       data.product.attributes.forEach(attr => {
-        console.log(`\n${attr.name} (${attr.type}):`);
-        attr.items.forEach(item => {
-          console.log(`  - ${item.displayValue}: ${item.value}`);
-        });
+        const name = String(attr.name || '').toLowerCase();
+        const id = String(attr.id || '').toLowerCase();
+        
+        if (name.includes('size') || id === 'size') {
+          initialSize = attr.items[0]?.value || "";
+        } else if (name.includes('color') || id === 'color') {
+          initialColor = attr.items[0]?.value || "";
+        } else if (name.includes('capacity') || id === 'capacity') {
+          initialCapacity = attr.items[0]?.value || "";
+        } else {
+          if (attr.items && attr.items.length > 0) {
+            initialOtherAttributes[attr.id] = attr.items[0].value;
+          }
+        }
       });
+
+      
 
       this.setState({
         product: data.product,
         currentImg: data.product.gallery[0],
+        selectedSize: initialSize,
+        selectedColor: initialColor,
+        selectedCapacity: initialCapacity,
+        selectedOtherAttributes: initialOtherAttributes,
         loading: false,
       });
     } catch (err) {
@@ -125,33 +145,52 @@ class PageDetails extends React.Component {
   handleAddToCart = () => {
     const { product, selectedSize, selectedColor, selectedCapacity, selectedOtherAttributes } = this.state;
 
-    const sizeAttr = product.attributes.find(a => a.name.toLowerCase().includes('size'));
-    const colorAttr = product.attributes.find(a => a.name.toLowerCase().includes('color'));
-    const capacityAttr = product.attributes.find(a => a.name.toLowerCase().includes('capacity'));
+    const sizeAttr = product.attributes.find(a => {
+      const name = String(a.name || '').toLowerCase();
+      const id = String(a.id || '').toLowerCase();
+      return name.includes('size') || id === 'size';
+    });
+    const colorAttr = product.attributes.find(a => {
+      const name = String(a.name || '').toLowerCase();
+      const id = String(a.id || '').toLowerCase();
+      return name.includes('color') || id === 'color';
+    });
+    const capacityAttr = product.attributes.find(a => {
+      const name = String(a.name || '').toLowerCase();
+      const id = String(a.id || '').toLowerCase();
+      return name.includes('capacity') || id === 'capacity';
+    });
     
     const otherAttributes = product.attributes.filter(a => {
-      const name = a.name.toLowerCase();
-      return !name.includes('size') && !name.includes('color') && !name.includes('capacity');
+      const name = String(a.name || '').toLowerCase();
+      const id = String(a.id || '').toLowerCase();
+      return !name.includes('size') && id !== 'size' && 
+             !name.includes('color') && id !== 'color' && 
+             !name.includes('capacity') && id !== 'capacity';
     });
 
     const otherAttributesWithValues = otherAttributes.map(attr => ({
-      ...attr,
-      selectedValue: selectedOtherAttributes[attr.id] || ""
+      id: attr.id,
+      name: attr.name,
+      type: attr.type,
+      items: attr.items,
+      selectedValue: selectedOtherAttributes[attr.id] || attr.items[0]?.value || ""
     }));
 
     const item = {
       id: product.id,
       img: product.gallery[0],
       name: product.name,
+      category: product.category || "",
       quantity: 1,
       price: Number(product.prices[0].amount.toFixed(2)),
       currencySymbol: product.prices[0].currency.symbol,
       availableSizes: sizeAttr?.items || [],
       availableColors: colorAttr?.items || [],
       availableCapacities: capacityAttr?.items || [],
-      size: selectedSize,
-      color: selectedColor,
-      capacity: selectedCapacity,
+      size: selectedSize || sizeAttr?.items[0]?.value || "",
+      color: selectedColor || colorAttr?.items[0]?.value || "",
+      capacity: selectedCapacity || capacityAttr?.items[0]?.value || "",
       otherAttributes: otherAttributesWithValues,
     };
 
@@ -219,9 +258,10 @@ class PageDetails extends React.Component {
             <p className="font-semibold text-3xl">{product.name}</p>
 
             {product.attributes.map((attr) => {
-              const attrNameLower = attr.name.toLowerCase();
+              const attrNameLower = String(attr.name || '').toLowerCase();
+              const attrIdLower = String(attr.id || '').toLowerCase();
               
-              if (attrNameLower.includes('size')) {
+              if (attrNameLower.includes('size') || attrIdLower === 'size') {
                 return (
                   <div key={attr.id} data-testid={`product-attribute-${attr.id}`}>
                     <Size
@@ -235,7 +275,7 @@ class PageDetails extends React.Component {
                 );
               }
               
-              if (attrNameLower.includes('color')) {
+              if (attrNameLower.includes('color') || attrIdLower === 'color') {
                 return (
                   <div key={attr.id} data-testid={`product-attribute-${attr.id}`}>
                     <Color
@@ -249,7 +289,7 @@ class PageDetails extends React.Component {
                 );
               }
               
-              if (attrNameLower.includes('capacity')) {
+              if (attrNameLower.includes('capacity') || attrIdLower === 'capacity') {
                 return (
                   <div key={attr.id} data-testid={`product-attribute-${attr.id}`}>
                     <Capacity
@@ -263,12 +303,12 @@ class PageDetails extends React.Component {
                 );
               }
               
-           
+              
               return (
                 <div key={attr.id} data-testid={`product-attribute-${attr.id}`}>
                   <TextAttribute
                     attribute={attr}
-                    selectedValue={this.state.selectedOtherAttributes[attr.id] || ""}
+                    selectedValue={this.state.selectedOtherAttributes[attr.id] || attr.items[0]?.value || ""}
                     onValueChange={(value) => this.handleOtherAttributeChange(attr.id, value)}
                     disabled={false}
                   />
